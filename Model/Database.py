@@ -16,5 +16,10 @@ class DataBase:
         self.sqliteConnection.close()
         print("Closed")
 
+    def getTableInfo(self, name):
+        """Return a string representing the table's CREATE"""
+        self.cursor.execute("SELECT sql FROM sqlite_master WHERE name=?;", [name])
+        return self.cursor.fetchone()[0]
+
 
 database = DataBase()
