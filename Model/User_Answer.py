@@ -19,6 +19,7 @@ class UserAnswer:
         :param data: data in the format id, id_question, id_user
         """
         self.database.cursor.execute(f"INSERT INTO User_Answer VALUES({data[0]}, {data[1]}, {data[2]})")
+        self.database.connection.commit()
 
     def updateQuestion(self, *data):
         """
@@ -33,6 +34,7 @@ class UserAnswer:
         :param data: data in the format id, id_user
         """
         self.database.cursor.execute(f"UPDATE User_Answer SET id_user = '{data[1]}' WHERE id = {data[0]}")
+        self.database.connection.commit()
 
 
 # user_answer = UserAnswer()

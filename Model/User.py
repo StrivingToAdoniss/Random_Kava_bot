@@ -22,6 +22,7 @@ class User:
             self.database.cursor.execute(f"INSERT INTO User VALUES({data[0]}, NULL)")
         else:
             self.database.cursor.execute(f"INSERT INTO User VALUES({data[0]}, {data[1]})")
+        self.database.connection.commit()
 
     def updateCategory(self, *data):
         """
@@ -29,9 +30,14 @@ class User:
         :param data: data in the format id, id_category
         """
         self.database.cursor.execute(f"UPDATE User SET id_category = '{data[1]}' WHERE id = {data[0]}")
+        self.database.connection.commit()
+
+    def getUsersByCategoryId(self, id):
+        self.database.cursor.execute(f"SELECT * FROM User WHERE id_category = {id}")
+        return self.database.cursor.fetchall()
 
 
-# user = User()
+user = User()
 # user.insert_data(1, 2)
 # user.insert_data(22)
 # user.updateCategory()
