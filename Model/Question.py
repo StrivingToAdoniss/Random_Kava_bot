@@ -1,4 +1,4 @@
-from Database import database
+from Model.Database import database
 
 
 class Question:
@@ -7,9 +7,8 @@ class Question:
 
     def get_data(self):
         self.database.cursor.execute("SELECT * FROM Question")
-        questions = self.database.cursor.fetchall()
-        return questions
+        return self.database.cursor.fetchall()
 
 
 questions = Question()
-print(questions.get_data())
+# print(questions.get_data())

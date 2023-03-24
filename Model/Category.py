@@ -1,4 +1,5 @@
-from Database import database
+from Model.Database import database
+
 
 class Category:
     def __init__(self):
@@ -10,7 +11,16 @@ class Category:
         :return: list of categories
         """
         self.database.cursor.execute("SELECT * FROM Category")
-        return self.database.cursor.fetchall()
+        return [item[0] for item in self.database.cursor.fetchall()]
+
+    def get_categories_ids(self):
+        """
+        Gets all category ids from Category database
+        :return: list of category ids
+        """
+        self.database.cursor.execute("SELECT id FROM Category")
+        return [item[0] for item in self.database.cursor.fetchall()]
+
 
     def get_users_with_categories(self):
         """
@@ -25,3 +35,6 @@ class Category:
             users_with_categories.append((user[0], user[1]))
 
         return users_with_categories
+
+
+categories = Category()

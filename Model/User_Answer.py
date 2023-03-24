@@ -1,4 +1,4 @@
-from Database import database
+from Model.Database import database
 
 
 class UserAnswer:
