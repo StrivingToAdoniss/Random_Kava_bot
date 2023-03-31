@@ -25,6 +25,8 @@ async def start(message: types.Message):
     user_message = "Hello " + message.from_user.username
     await message.answer(user_message)
 
+#Sasha's code start
+    
 class Question(StatesGroup):
     end = State()
 
@@ -93,6 +95,8 @@ async def process_callback_query(callback_query: types.CallbackQuery, state: FSM
         await Question.end.set()
         await state.finish()
     cur.close()
+    
+#Sasha's code End
 
 async def main():
     await dp.start_polling(bot)
