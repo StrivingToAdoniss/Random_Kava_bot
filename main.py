@@ -63,6 +63,7 @@ async def ask_question(message: types.Message, question_number):
         reply_markup = InlineKeyboardMarkup().add(*answer_buttons)
         await message.answer(question_text, reply_markup=reply_markup)
     else:
+        state = dp.current_state(user=message.from_user.id)
         await state.finish()
 
 
