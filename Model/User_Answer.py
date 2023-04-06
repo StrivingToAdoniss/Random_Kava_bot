@@ -37,6 +37,6 @@ class UserAnswer:
         self.database.connection.commit()
 
 
-# user_answer = UserAnswer()
+user_answer = UserAnswer()
 # user_answer.insert_data(1, 2, 3)
 # print(user_answer.get_data())

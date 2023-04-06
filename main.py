@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import psycopg2
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher import FSMContext
@@ -8,6 +7,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from Model.Question import questions
 from Model.User import user
 from Model.Category import categories
+from Model.User_Answer import user_answer
 from admins import admins_list
 
 logging.basicConfig(level=logging.INFO)
@@ -25,10 +25,10 @@ async def start(message: types.Message):
     user_message = "Hello " + message.from_user.username
     await message.answer(user_message)
 
-#Sasha's code start
-    
+
 class Question(StatesGroup):
     end = State()
+
 
 @dp.message_handler(commands=['next'])
 async def next(message: types.Message):
@@ -48,17 +48,14 @@ async def groups(message: types.Message):
     else:
         await message.answer("No access.")
 
+
 async def ask_question(message: types.Message, question_number):
-    cur = conn.cursor()
-    cur.execute('SELECT id, question, answer1, answer2 FROM questions WHERE id=%s', (question_number,))
-    row = cur.fetchone()
+    row = questions.get_by_id(question_number)
     if row is not None:
         question_id, question_text, answer1, answer2 = row
 
-       
         state = dp.current_state(user=message.from_user.id)
         await state.update_data(question_id=question_id)
-
 
         answer_buttons = [
             InlineKeyboardButton(answer, callback_data=answer) for answer in [answer1, answer2]
@@ -68,35 +65,23 @@ async def ask_question(message: types.Message, question_number):
     else:
         await state.finish()
 
-    cur.close()
-
 
 @dp.callback_query_handler(lambda c: True)
-async def process_callback_query(callback_query: types.CallbackQuery, state: FSMContext):
+async def process_callback_query(message: types.Message, callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
-
 
     question_id = await state.get_data('question_id')
     answer = callback_query.data
 
+    user_answer.insert_data(message.from_user.id, question_id, answer)
 
-    cur = conn.cursor()
-    cur.execute('INSERT INTO answers (question_id, answer) VALUES (%s, %s)', (question_id, answer))
-    conn.commit()
-    cur.close()
-
- 
-    cur = conn.cursor()
-    cur.execute('SELECT id FROM questions WHERE id > %s ORDER BY id ASC LIMIT 1', (question_id,))
-    row = cur.fetchone()
+    row = questions.get_one(question_id)
     if row is not None:
         await ask_question(callback_query.message, row[0])
     else:
         await Question.end.set()
         await state.finish()
-    cur.close()
-    
-#Sasha's code End
+
 
 async def main():
     await dp.start_polling(bot)
