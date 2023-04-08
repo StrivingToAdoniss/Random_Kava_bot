@@ -8,6 +8,7 @@ from Model.Question import questions
 from Model.User import user
 from Model.Category import categories
 from Model.User_Answer import user_answer
+from Model.Answer import answer
 from admins import admins_list
 
 logging.basicConfig(level=logging.INFO)
@@ -68,13 +69,14 @@ async def ask_question(message: types.Message, question_number):
 
 
 @dp.callback_query_handler(lambda c: True)
-async def process_callback_query(message: types.Message, callback_query: types.CallbackQuery, state: FSMContext):
+async def process_callback_query(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
     question_id = await state.get_data('question_id')
-    answer = callback_query.data
+    print(question_id) # empty
+    answer_id = answer.get_data_title_question(callback_query.data, question_id)
 
-    user_answer.insert_data(message.from_user.id, question_id, answer)
+    user_answer.insert_data(callback_query.message.from_user.id, question_id, answer_id)
 
     row = questions.get_one(question_id)
     if row is not None:

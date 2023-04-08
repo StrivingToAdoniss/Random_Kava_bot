@@ -13,12 +13,13 @@ class UserAnswer:
         self.database.cursor.execute("SELECT * FROM User_Answer")
         return self.database.cursor.fetchall()
 
-    def insert_data(self, *data):
+    def insert_data(self, id_question, id_user, id_answer):
         """
         Inserts data in User_Answer database
         :param data: data in the format id, id_question, id_user
         """
-        self.database.cursor.execute(f"INSERT INTO User_Answer VALUES({data[0]}, {data[1]}, {data[2]})")
+        self.database.cursor.execute("INSERT INTO User_Answer "
+                                     f"VALUES({id_question}, '{id_user}', {id_answer})")
         self.database.connection.commit()
 
     def updateQuestion(self, *data):

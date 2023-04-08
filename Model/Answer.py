@@ -10,6 +10,13 @@ class Answer:
         answers = self.database.cursor.fetchall()
         return answers
 
+    def get_data_title_question(self, title, id_question):
+        print(f"SELECT id FROM Answer WHERE title like '{title}' and id_question = {id_question}")
+        self.database.cursor.execute(f"SELECT id FROM Answer WHERE title like '{title}' and id_question = {id_question}")
+
+        answer_id = self.database.cursor.fetchone()
+        return answer_id
+
     def get_data_by_user_id(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM Answer WHERE id_user = {user_id}")
         answers_by_user_id = self.database.cursor.fetchall()

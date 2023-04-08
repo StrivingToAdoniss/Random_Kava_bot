@@ -10,12 +10,16 @@ class Question:
         return self.database.cursor.fetchall()
 
     def get_by_id(self, question_number):
-        self.database.cursor.execute('SELECT id, question, answer1, answer2 FROM questions WHERE id=%s',
-                                     (question_number,))
-        return self.database.cursor.fetchone()
+        self.database.cursor.execute(f'SELECT title FROM Answer WHERE id_question={question_number}')
+        answers = [item[0] for item in self.database.cursor.fetchall()]
+        self.database.cursor.execute(f'SELECT id, title FROM Question WHERE id={question_number}')
+        question = list(self.database.cursor.fetchone())
+        for answer in answers:
+            question.append(answer)
+        return question
 
     def get_one(self, question_id):
-        self.database.cursor.execute('SELECT id FROM questions WHERE id > %s ORDER BY id ASC LIMIT 1', (question_id,))
+        self.database.cursor.execute('SELECT id FROM Question WHERE id > %s ORDER BY id ASC LIMIT 1', (question_id,))
         return self.database.cursor.fetchone()
 
 questions = Question()
