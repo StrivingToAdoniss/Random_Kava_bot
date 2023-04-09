@@ -75,7 +75,6 @@ async def process_callback_query(callback_query: types.CallbackQuery, state: FSM
     question_id = await state.get_data('question_id')
 
     if not question_id:
-        # If the question ID is not set in the state, retrieve the first question ID from the Question object
         row = questions.get_one(0)
         question_id = row[0]
         print(question_id)
@@ -89,7 +88,15 @@ async def process_callback_query(callback_query: types.CallbackQuery, state: FSM
     row = questions.get_one(question_id)
     print(row)
     if row is not None:
-        await ask_question(callback_query.message, row[0])
+        next_question_id = row[0] + 1
+
+        if next_question_id >= len(questions.get_data()):
+            await Question.end.set()
+            await state.finish()
+        else:
+            await state.update_data(question_id=next_question_id)
+
+            await ask_question(callback_query.message, next_question_id)
     else:
         await Question.end.set()
         await state.finish()
