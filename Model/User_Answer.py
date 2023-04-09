@@ -18,8 +18,17 @@ class UserAnswer:
         Inserts data in User_Answer database
         :param data: data in the format id, id_question, id_user
         """
-        self.database.cursor.execute("INSERT INTO User_Answer "
-                                     f"VALUES({id_question}, '{id_user}', {id_answer})")
+        self.database.cursor.execute(f"SELECT * FROM User_Answer WHERE id_question = {id_question} and id_user = '{id_user}'")
+        id_user_answer = self.database.cursor.fetchone()
+        if id_user_answer is None:
+            print("INSERT INTO User_Answer(id_question, id_user, id_answer) "
+                                         f"VALUES({id_question}, '{id_user}', {id_answer})")
+            self.database.cursor.execute("INSERT INTO User_Answer (id_question, id_user, id_answer)"
+                                         f"VALUES({id_question}, '{id_user}', {id_answer})")
+        else:
+            print(f"UPDATE User_Answer SET id_answer = {id_answer} WHERE id = {id_user_answer[0]}")
+            self.database.cursor.execute(f"UPDATE User_Answer SET id_answer = {id_answer} WHERE id = {id_user_answer[0]}")
+
         self.database.connection.commit()
 
     def updateQuestion(self, *data):

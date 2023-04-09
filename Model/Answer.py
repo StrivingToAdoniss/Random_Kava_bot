@@ -15,7 +15,8 @@ class Answer:
         self.database.cursor.execute(f"SELECT id FROM Answer WHERE title like '{title}' and id_question = {id_question}")
 
         answer_id = self.database.cursor.fetchone()
-        return answer_id
+        print(answer_id)
+        return answer_id[0]
 
     def get_data_by_user_id(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM Answer WHERE id_user = {user_id}")

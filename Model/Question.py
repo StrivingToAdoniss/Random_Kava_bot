@@ -19,7 +19,7 @@ class Question:
         return question
 
     def get_one(self, question_id):
-        self.database.cursor.execute('SELECT id FROM Question WHERE id > %s ORDER BY id ASC LIMIT 1', (question_id,))
+        self.database.cursor.execute(f'SELECT id FROM Question WHERE id > {question_id} ORDER BY id ASC LIMIT 1')
         return self.database.cursor.fetchone()
 
 questions = Question()

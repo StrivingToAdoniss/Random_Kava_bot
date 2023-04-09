@@ -69,21 +69,25 @@ async def ask_question(message: types.Message, question_number):
 
 
 @dp.callback_query_handler(lambda c: True)
-async def process_callback_query(message: types.Message, callback_query: types.CallbackQuery, state: FSMContext):
+async def process_callback_query(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
     question_id = await state.get_data('question_id')
+
     if not question_id:
         # If the question ID is not set in the state, retrieve the first question ID from the Question object
         row = questions.get_one(0)
         question_id = row[0]
+        print(question_id)
         await state.update_data(question_id=question_id)
 
-    answer = callback_query.data
-
-    user_answer.insert_data(message.from_user.id, question_id, answer)
+    answer_title = callback_query.data
+    answer_id = answer.get_data_title_question(answer_title, question_id)
+    print(answer_id)
+    user_answer.insert_data(question_id, callback_query.message.from_user.id, answer_id)
 
     row = questions.get_one(question_id)
+    print(row)
     if row is not None:
         await ask_question(callback_query.message, row[0])
     else:
