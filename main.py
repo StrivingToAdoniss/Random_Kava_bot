@@ -77,18 +77,19 @@ async def process_callback_query(callback_query: types.CallbackQuery, state: FSM
     if not question_id:
         row = questions.get_one(0)
         question_id = row[0]
+        print(question_id)
         await state.update_data(question_id=question_id)
+    else:
+        answer_title = callback_query.data
+        answer_id = answer.get_data_title_question(answer_title, question_id)
+        print(answer_id)
+        user_answer.insert_data(question_id, callback_query.message.from_user.id, answer_id)
 
-    answer_title = callback_query.data
-    answer_id = answer.get_data_title_question(answer_title, question_id)
-    user_id = callback_query.message.from_user.id
-    user_answer.insert_data(question_id, user_id, answer_id)
-
-    next_question_id = question_id + 1
-    row = questions.get_one(next_question_id)
+    question_id += 1
+    row = questions.get_one(question_id)
     if row is not None:
         await ask_question(callback_query.message, row[0])
-        await state.update_data(question_id=next_question_id)
+        await state.update_data(question_id=question_id)
     else:
         await Question.end.set()
         await state.finish()
