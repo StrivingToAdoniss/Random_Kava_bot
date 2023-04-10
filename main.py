@@ -18,6 +18,10 @@ token = '6211270631:AAHjLGInSIPzGaTvEe2bWcq_L2UxNWYcq2o'
 bot = Bot(token)
 # Диспетчер
 dp = Dispatcher(bot)
+order = 0
+data = questions.get_data()
+
+print(data)
 
 
 # Хендлер на команду /start
@@ -27,15 +31,11 @@ async def start(message: types.Message):
     await message.answer(user_message)
 
 
-class Question(StatesGroup):
-    end = State()
-
-
 @dp.message_handler(commands=['next'])
 async def next(message: types.Message):
     user.insert_user(message.from_user.id, message.from_user.username)
     await message.answer(user.get_data())
-    await ask_question(message, 1)
+    await ask_question(message)
 
 
 @dp.message_handler(commands=['groups'])
@@ -50,48 +50,34 @@ async def groups(message: types.Message):
         await message.answer("No access.")
 
 
-async def ask_question(message: types.Message, question_number):
-    row = questions.get_by_id(question_number)
+async def ask_question(message: types.Message):
+    try:
+        row = data[order]
+    except IndexError:
+        row = None
     if row is not None:
-        question_id, question_text, answer1, answer2 = row
-
-        state = dp.current_state(user=message.from_user.id)
-        await state.update_data(question_id=question_id)
-
         answer_buttons = [
-            InlineKeyboardButton(answer, callback_data=answer) for answer in [answer1, answer2]
+            InlineKeyboardButton(answer['title'], callback_data=f"{row['id_question']} {answer['id']}") for answer in row['answers']
         ]
         reply_markup = InlineKeyboardMarkup().add(*answer_buttons)
-        await message.answer(question_text, reply_markup=reply_markup)
+        await message.answer(row["title"], reply_markup=reply_markup)
     else:
-        state = dp.current_state(user=message.from_user.id)
-        await state.finish()
+        await message.answer(f"Дякую за відповідь!\nВаші відповіді: {user_answer}\n")
 
 
 @dp.callback_query_handler(lambda c: True)
-async def process_callback_query(callback_query: types.CallbackQuery, state: FSMContext):
+async def process_callback_query(callback_query: types.CallbackQuery):
+    global order
     await callback_query.answer()
+    answer_user = callback_query.data.split()
+    question_id = answer_user[0]
+    answer_id = answer_user[1]
 
-    question_id = await state.get_data('question_id')
-
-    if not question_id:
-        row = questions.get_one(0)
-        question_id = row[0]
-        await state.update_data(question_id=question_id)
-
-    answer_title = callback_query.data
-    answer_id = answer.get_data_title_question(answer_title, question_id)
     user_id = callback_query.message.from_user.id
     user_answer.insert_data(question_id, user_id, answer_id)
+    order += 1
+    await ask_question(callback_query.message)
 
-    next_question_id = question_id + 1
-    row = questions.get_one(next_question_id)
-    if row is not None:
-        await ask_question(callback_query.message, row[0])
-        await state.update_data(question_id=next_question_id)
-    else:
-        await Question.end.set()
-        await state.finish()
 
 async def main():
     await dp.start_polling(bot)

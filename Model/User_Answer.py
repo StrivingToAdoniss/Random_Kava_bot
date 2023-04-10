@@ -5,6 +5,8 @@ class UserAnswer:
     def __init__(self):
         self.database = database
 
+
+
     def get_data(self):
         """
         Gets all data from User_Answer database
@@ -12,6 +14,16 @@ class UserAnswer:
         """
         self.database.cursor.execute("SELECT * FROM User_Answer")
         return self.database.cursor.fetchall()
+
+    def __str__(self):
+
+        user_answer_str = ""
+        for answer in self.get_data():
+            # print(answer[0])
+            self.database.cursor.execute(f"SELECT title FROM Answer where id = {answer[3]}")
+            answer_name = self.database.cursor.fetchone()
+            user_answer_str+=f"{answer_name[0]}\n"
+        return user_answer_str
 
     def insert_data(self, id_question, id_user, id_answer):
         """

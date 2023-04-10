@@ -6,8 +6,16 @@ class Question:
         self.database = database
 
     def get_data(self):
+        data = []
         self.database.cursor.execute("SELECT * FROM Question")
-        return self.database.cursor.fetchall()
+        questions = self.database.cursor.fetchall()
+
+        for question in questions:
+            self.database.cursor.execute(f"SELECT * FROM Answer WHERE id_question ={question[0]}")
+            answers = self.database.cursor.fetchall()
+            data.append({'id_question': question[0], 'title': question[1], 'answers':
+                [{'id': answer[0], 'title': answer[1]} for answer in answers]})
+        return data
 
     def get_by_id(self, question_number):
         self.database.cursor.execute(f'SELECT title FROM Answer WHERE id_question={question_number}')
@@ -19,8 +27,9 @@ class Question:
         return question
 
     def get_one(self, question_id):
-        self.database.cursor.execute(f'SELECT id FROM Question WHERE id > {question_id} ORDER BY id ASC LIMIT 1')
+        self.database.cursor.execute(f'SELECT id FROM Question ORDER BY id ASC LIMIT 1 OFFSET {question_id}')
         return self.database.cursor.fetchone()
+
 
 questions = Question()
 # print(questions.get_data())
