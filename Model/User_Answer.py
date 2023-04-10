@@ -7,18 +7,18 @@ class UserAnswer:
 
 
 
-    def get_data(self):
+    def get_data_user(self, user_id):
         """
         Gets all data from User_Answer database
         :return: data from User_Answer database
         """
-        self.database.cursor.execute("SELECT * FROM User_Answer")
+        self.database.cursor.execute(f"SELECT * FROM User_Answer where id_user = '{user_id}'")
         return self.database.cursor.fetchall()
 
-    def __str__(self):
+    def print(self, user_id):
 
         user_answer_str = ""
-        for answer in self.get_data():
+        for answer in self.get_data_user(user_id):
             # print(answer[0])
             self.database.cursor.execute(f"SELECT title FROM Answer where id = {answer[3]}")
             answer_name = self.database.cursor.fetchone()
