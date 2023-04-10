@@ -62,7 +62,7 @@ async def ask_question(message: types.Message):
         reply_markup = InlineKeyboardMarkup().add(*answer_buttons)
         await message.answer(row["title"], reply_markup=reply_markup)
     else:
-        await message.answer(f"Дякую за відповідь!\nВаші відповіді: {user_answer}\n")
+        await message.answer(f"Дякую за відповідь!\nВаші відповіді:\n{user_answer}\n")
 
 
 @dp.callback_query_handler(lambda c: True)
