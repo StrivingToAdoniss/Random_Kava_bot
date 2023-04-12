@@ -35,16 +35,9 @@ async def group_users_by_personality(message: types.Message) -> None:
     # -- формуємо 2-d масив вигляду [[user_id, first_answer_id, second_answer_id...], [user_id, first_answer_id, second_answer_id...]] (users_data)
     users = user.getUsersId()
     users_data = []
-    for i in range(len(users)):
-        ud = user_answer.get_data_user(users[i])
-        users_data.append([])
-        users_data[i].append(users[i])
-        for j in ud:
-            users_data[i].append(j[3])
-    # Позбуваємося зайвих користувачів(тих, хто не відповів на всі питання) ------------------------------- Ось тут, як додамо всі питання, потрібно буде змінити 4 на кількість питань+1
-    for i in users_data:
-        if len(i) != 4:
-            users_data.remove(i)
+     for user_id in users:
+        user_answers_data = user_answer.get_user_answers_data(user_id)
+        users_data.append(user_answers_data)
 
     kmeans_model = KMeans(n_clusters=2, random_state=42).fit(users_data)
     cluster_assignments = kmeans_model.predict(users_data)
