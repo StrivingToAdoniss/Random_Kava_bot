@@ -15,6 +15,25 @@ class UserAnswer:
         self.database.cursor.execute(f"SELECT * FROM User_Answer where id_user = '{user_id}'")
         return self.database.cursor.fetchall()
 
+ def get_data_user_all_questions(self, user_id):
+        """
+        Gets all data from User_Answer database for users who have answered all questions
+        :return: data from User_Answer database
+        """
+        self.database.cursor.execute(f"SELECT * FROM User_Answer WHERE id_user = '{user_id}' "
+                                      "GROUP BY id_user HAVING COUNT(DISTINCT id_question) = (SELECT COUNT(*) FROM Question)")
+        return self.database.cursor.fetchall()
+
+    def get_user_answers_data(self, user_id):
+        user_answers_data = []
+        user_answers_data.append(user_id)
+
+        user_answers = self.get_data_user_all_questions(user_id)
+        for answer in user_answers:
+            user_answers_data.append(answer[3])
+
+        return user_answers_data
+
     def print(self, user_id):
 
         user_answer_str = ""
