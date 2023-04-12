@@ -46,40 +46,12 @@ async def group_users_by_personality(message: types.Message) -> None:
         if len(i) != 4:
             users_data.remove(i)
 
-    # Основна робота коду Саші
     kmeans_model = KMeans(n_clusters=2, random_state=42).fit(users_data)
     cluster_assignments = kmeans_model.predict(users_data)
-    # Формуємо результати
-    labels = {0: 'Introverted', 1: 'Extroverted'}
-    results = []
-    print(f"{users} --- {cluster_assignments}")
-    for i in range(len(users_data)):
-        results.append([users_data[i][0], labels[cluster_assignments[i]]])
 
-    # Групуємо по 4 юзера "Extroverted"
-    # extroverted_groups: list[tuple[str, pd.DataFrame]] = []
-    # for i in range(0, len(extroverted_users), 4):
-    #     extroverted_group = extroverted_users.iloc[i:i+4]
-    #     extroverted_group_name = f'Extroverted{i//4 + 1}'
-    #     extroverted_groups.append((extroverted_group_name, extroverted_group))
+    user.updateCategory(users, cluster_assignments)
 
-    # Групуємо по 4 юзера в "Introverted"
-    # introverted_groups: list[tuple[str, pd.DataFrame]] = []
-    # for i in range(0, len(introverted_users), 4):
-    #     introverted_group = introverted_users.iloc[i:i+4]
-    #     introverted_group_name = f'Introverted{i//4 + 1}'
-    #     introverted_groups.append((introverted_group_name, introverted_group))
-
-    # Прінтимо в консольку(Треба придумати норм спосіб)
-    # result = 'Introverted Groups:\n'
-    # for group_name, group in introverted_groups:
-    #     result += f"{group_name}\n{group.to_string(index=False)}\n\n"
-    #
-    # result += 'Extroverted Groups:\n'
-    # for group_name, group in extroverted_groups:
-    #     result += f"{group_name}\n{group.to_string(index=False)}\n\n"
-
-    await message.answer(results)
+    await message.answer("Ready. Press /groups to see results.")
 
 
 # Хендлер на команду /start

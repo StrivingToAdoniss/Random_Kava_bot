@@ -22,14 +22,16 @@ class User:
                 (f"INSERT INTO User(id, username, id_category) VALUES('{user_id}', '{username}', NULL)")
             self.database.connection.commit()
 
-    def updateCategory(self, *data):
+    def updateCategory(self, users_id, categories_id):
         """
         Updates id_category in User database
         :param data: data in the format id, id_category
         """
-        if self.isUsersById(data[0]):
-            self.database.cursor.execute(f"UPDATE User SET id_category = '{data[1]}' WHERE id = {data[0]}")
-            self.database.connection.commit()
+        if len(users_id) == len(categories_id):
+            for user_id, category_id in users_id, categories_id:
+                if self.isUsersById(user_id):
+                    self.database.cursor.execute(f"UPDATE User SET id_category = '{category_id + 1}' WHERE id = {user_id}")
+                    self.database.connection.commit()
 
     def getUsersByCategoryId(self, id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id_category = {id}")
