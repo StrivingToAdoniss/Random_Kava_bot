@@ -35,6 +35,11 @@ class User:
         self.database.cursor.execute(f"SELECT * FROM User WHERE id_category = {id}")
         return self.database.cursor.fetchall()
 
+    def getUsersId(self):
+        self.database.cursor.execute(f"SELECT id FROM User")
+        users = self.database.cursor.fetchall()
+        return [i[0] for i in users]
+
     def isUsersById(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id = {user_id}")
         return len(self.database.cursor.fetchall()) > 0
