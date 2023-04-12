@@ -21,62 +21,65 @@ data = questions.get_data()
 
 print(data)
 
+
+@dp.message_handler(commands=['groups_test'])
 async def group_users_by_personality(message: types.Message) -> None:
+    print("--------------------------------- Work ---------------------------------")
     # Перевіряємо рівень доступу
     if str(message.from_user.id) not in admins_list:
         await message.answer("No access.")
         return
 
-    # Взаємодіємо з ДБ
-    database = Database()
+    # Взаємодіємо з ДБ:
+    # -- отримуємо список айді юзерів(users)
+    # -- формуємо 2-d масив вигляду [[user_id, first_answer_id, second_answer_id...], [user_id, first_answer_id, second_answer_id...]] (users_data)
+    users = user.getUsersId()
+    users_data = []
+    for i in range(len(users)):
+        ud = user_answer.get_data_user(users[i])
+        users_data.append([])
+        users_data[i].append(users[i])
+        for j in ud:
+            users_data[i].append(j[3])
+    # Позбуваємося зайвих користувачів(тих, хто не відповів на всі питання) ------------------------------- Ось тут, як додамо всі питання, потрібно буде змінити 4 на кількість питань+1
+    for i in users_data:
+        if len(i) != 4:
+            users_data.remove(i)
 
-  
-    user_answer = UserAnswer(database)
-
-  
-    user_data = user_answer.get_all_data()
-
-    # Отримуємо відповіді
-    answer_columns = user_data.columns[1:]
-
-    
-    kmeans_model = KMeans(n_clusters=2, random_state=42).fit(user_data[answer_columns])
-
-    # Призначаєом кластер для юзерів
-    cluster_assignments = kmeans_model.predict(user_data[answer_columns])
-
-    # Мапимо кластери
+    # Основна робота коду Саші
+    kmeans_model = KMeans(n_clusters=2, random_state=42).fit(users_data)
+    cluster_assignments = kmeans_model.predict(users_data)
+    # Формуємо результати
     labels = {0: 'Introverted', 1: 'Extroverted'}
-    user_data['label'] = [labels[c] for c in cluster_assignments]
-
-    # Сепаруємо юзерів або в "Extroverted" або в "Introverted"
-    introverted_users = user_data[user_data['label'] == 'Introverted']
-    extroverted_users = user_data[user_data['label'] == 'Extroverted']
+    results = []
+    print(f"{users} --- {cluster_assignments}")
+    for i in range(len(users_data)):
+        results.append([users_data[i][0], labels[cluster_assignments[i]]])
 
     # Групуємо по 4 юзера "Extroverted"
-    extroverted_groups: List[Tuple[str, pd.DataFrame]] = []
-    for i in range(0, len(extroverted_users), 4):
-        extroverted_group = extroverted_users.iloc[i:i+4]
-        extroverted_group_name = f'Extroverted{i//4 + 1}'
-        extroverted_groups.append((extroverted_group_name, extroverted_group))
+    # extroverted_groups: list[tuple[str, pd.DataFrame]] = []
+    # for i in range(0, len(extroverted_users), 4):
+    #     extroverted_group = extroverted_users.iloc[i:i+4]
+    #     extroverted_group_name = f'Extroverted{i//4 + 1}'
+    #     extroverted_groups.append((extroverted_group_name, extroverted_group))
 
     # Групуємо по 4 юзера в "Introverted"
-    introverted_groups: List[Tuple[str, pd.DataFrame]] = []
-    for i in range(0, len(introverted_users), 4):
-        introverted_group = introverted_users.iloc[i:i+4]
-        introverted_group_name = f'Introverted{i//4 + 1}'
-        introverted_groups.append((introverted_group_name, introverted_group))
+    # introverted_groups: list[tuple[str, pd.DataFrame]] = []
+    # for i in range(0, len(introverted_users), 4):
+    #     introverted_group = introverted_users.iloc[i:i+4]
+    #     introverted_group_name = f'Introverted{i//4 + 1}'
+    #     introverted_groups.append((introverted_group_name, introverted_group))
 
     # Прінтимо в консольку(Треба придумати норм спосіб)
-    result = 'Introverted Groups:\n'
-    for group_name, group in introverted_groups:
-        result += f"{group_name}\n{group.to_string(index=False)}\n\n"
+    # result = 'Introverted Groups:\n'
+    # for group_name, group in introverted_groups:
+    #     result += f"{group_name}\n{group.to_string(index=False)}\n\n"
+    #
+    # result += 'Extroverted Groups:\n'
+    # for group_name, group in extroverted_groups:
+    #     result += f"{group_name}\n{group.to_string(index=False)}\n\n"
 
-    result += 'Extroverted Groups:\n'
-    for group_name, group in extroverted_groups:
-        result += f"{group_name}\n{group.to_string(index=False)}\n\n"
-
-    await message.answer(result)
+    await message.answer(results)
 
 
 # Хендлер на команду /start
