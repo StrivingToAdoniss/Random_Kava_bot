@@ -41,15 +41,31 @@ async def group_users_by_personality(message: types.Message) -> None:
         users_data[i].append(users[i])
         for j in ud:
             users_data[i].append(j[3])
+
     # Позбуваємося зайвих користувачів(тих, хто не відповів на всі питання) ------------------------------- Ось тут, як додамо всі питання, потрібно буде змінити 4 на кількість питань+1
+    users_data_ids = []
     for i in users_data:
         if len(i) != 4:
             users_data.remove(i)
-
-    kmeans_model = KMeans(n_clusters=2, random_state=42).fit(users_data)
-    cluster_assignments = kmeans_model.predict(users_data)
-
-    user.updateCategory(users, cluster_assignments)
+        users_data_ids.append(i[0])
+    print(users_data)
+    if 6<=len(users_data)<=20:
+        num_categories = round(len(users_data) / 2)
+    elif len(users_data)>=20:
+        num_categories = round(len(users_data)/5)
+    else:
+        num_categories = 1
+    print(num_categories)
+    categories.insert_categories(num_categories)
+    if num_categories>1:
+        kmeans_model = KMeans(n_clusters=num_categories, random_state=42).fit(users_data)
+        cluster_assignments = kmeans_model.predict(users_data)
+    else:
+        cluster_assignments = []
+        for _ in users_data:
+            cluster_assignments.append(0)
+    print(cluster_assignments)
+    user.updateCategory(users_data_ids, cluster_assignments)
 
     await message.answer("Ready. Press /groups to see results.")
 
@@ -57,7 +73,7 @@ async def group_users_by_personality(message: types.Message) -> None:
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    user_message = "Hello " + message.from_user.username
+    user_message = "Привіт, " + message.from_user.username + "\nДля продовження натисни /next."
     await message.answer(user_message)
 
 
@@ -65,7 +81,7 @@ async def start(message: types.Message):
 async def next(message: types.Message):
     user.insert_user(message.from_user.id, message.from_user.username)
     print(message.from_user.id)
-    await message.answer(user.get_data())
+    # await message.answer(user.get_data())
     order[str(message.from_user.id)] = 0
     await ask_question(message, message.from_user.id)
 
