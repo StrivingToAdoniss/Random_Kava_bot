@@ -28,10 +28,13 @@ class User:
         :param data: data in the format id, id_category
         """
         if len(users_id) == len(categories_id):
-            for user_id, category_id in users_id, categories_id:
+            for user_id, category_id in zip(users_id, categories_id):
+                print(category_id)
+                print(user_id)
                 if self.isUsersById(user_id):
-                    self.database.cursor.execute(f"UPDATE User SET id_category = '{category_id + 1}' WHERE id = {user_id}")
+                    self.database.cursor.execute(f"UPDATE User SET id_category = {int(category_id) + 1} WHERE id = '{user_id}'")
                     self.database.connection.commit()
+                    print()
 
     def getUsersByCategoryId(self, id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id_category = {id}")
@@ -43,8 +46,10 @@ class User:
         return [i[0] for i in users]
 
     def isUsersById(self, user_id):
-        self.database.cursor.execute(f"SELECT * FROM User WHERE id = {user_id}")
-        return len(self.database.cursor.fetchall()) > 0
+        self.database.cursor.execute(f"SELECT * FROM User WHERE id = '{user_id}'")
+        res = len(self.database.cursor.fetchall()) > 0
+        print(res)
+        return res
 
     def get_usernames_by_category_id(self, category_id):
         """

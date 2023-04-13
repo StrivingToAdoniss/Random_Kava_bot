@@ -5,6 +5,15 @@ class Category:
     def __init__(self):
         self.database = database
 
+    def insert_categories(self, num_categories):
+        self.database.cursor.execute(f"Delete from Category")
+        self.database.connection.commit()
+        print(self.get_categories())
+        for i in range(0, num_categories):
+            self.database.cursor.execute(f"Insert into Category VALUES ({i+1}, 'Категорія {i+1}')")
+            self.database.connection.commit()
+        print(self.get_categories())
+
     def get_categories(self):
         """
         Gets all categories from Category database
