@@ -29,12 +29,12 @@ class User:
         """
         if len(users_id) == len(categories_id):
             for user_id, category_id in zip(users_id, categories_id):
-                print(category_id)
-                print(user_id)
+                # print(category_id)
+                # print(user_id)
                 if self.isUsersById(user_id):
                     self.database.cursor.execute(f"UPDATE User SET id_category = {int(category_id) + 1} WHERE id = '{user_id}'")
                     self.database.connection.commit()
-                    print()
+                    # print()
 
     def getUsersByCategoryId(self, id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id_category = {id}")
@@ -48,7 +48,7 @@ class User:
     def isUsersById(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id = '{user_id}'")
         res = len(self.database.cursor.fetchall()) > 0
-        print(res)
+        # print(res)
         return res
 
     def get_usernames_by_category_id(self, category_id):
@@ -58,6 +58,13 @@ class User:
         """
         self.database.cursor.execute(f"SELECT username FROM User WHERE id_category = {category_id}")
         return [item[0] for item in self.database.cursor.fetchall()]
+
+    def get_users_all_questions(self):
+        self.database.cursor.execute(f"SELECT id_user FROM User_Answer GROUP BY id_user "
+                                     f"HAVING COUNT(DISTINCT id_question) = (SELECT COUNT(*) FROM Question)")
+        res = [item[0] for item in self.database.cursor.fetchall()]
+        return res
+
 
 user = User()
 # print(user.isUsersById("795526685"))

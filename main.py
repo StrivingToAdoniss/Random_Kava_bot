@@ -8,7 +8,7 @@ from Model.Category import categories
 from Model.User_Answer import user_answer
 from admins import admins_list
 import pandas as pd
-from sklearn.cluster import KMeans, MiniBatchKMeans
+from sklearn.cluster import MiniBatchKMeans
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,39 +30,30 @@ async def group_users_by_personality(message: types.Message) -> None:
         await message.answer("No access.")
         return
 
-    # Взаємодіємо з ДБ:
-    # -- отримуємо список айді юзерів(users)
-    # -- формуємо 2-d масив вигляду [[user_id, first_answer_id, second_answer_id...], [user_id, first_answer_id, second_answer_id...]] (users_data)
-    users = user.getUsersId()
-    users_data = []
-    for i in range(len(users)):
-        ud = user_answer.get_data_user(users[i])
-        users_data.append([])
-        users_data[i].append(users[i])
+    users_data_ids = user.get_users_all_questions()
+    users_answers = []
+    for i in range(len(users_data_ids)):
+        ud = user_answer.get_data_user(users_data_ids[i])
+        answer_of_user = []
         for j in ud:
-            users_data[i].append(j[3])
-
-    # Позбуваємося зайвих користувачів(тих, хто не відповів на всі питання) ------------------------------- Ось тут, як додамо всі питання, потрібно буде змінити 4 на кількість питань+1
-    users_data_ids = []
-    for i in users_data:
-        if len(i) != 4:
-            users_data.remove(i)
-        users_data_ids.append(i[0])
-    print(users_data)
+            answer_of_user.append(j[3])
+        users_answers.append(answer_of_user)
+    # print(users_data_ids)
+    # print(users_answers)
     batch_size = 4
-    n_clusters = round(len(users_data) / batch_size)  # Maximum number of clusters
+    n_clusters = round(len(users_data_ids) / batch_size)  # Maximum number of clusters
 
     if n_clusters > 0:
         model = MiniBatchKMeans(n_clusters=n_clusters, batch_size=batch_size)
-        print(n_clusters)
+        # print(n_clusters)
         categories.insert_categories(n_clusters)
-        model.fit(users_data)
-        cluster_assignments = model.predict(users_data)
+        model.fit(users_answers)
+        cluster_assignments = model.predict(users_answers)
     else:
         cluster_assignments = []
-        for _ in users_data:
+        for _ in users_data_ids:
             cluster_assignments.append(0)
-    print(cluster_assignments)
+    # print(cluster_assignments)
     user.updateCategory(users_data_ids, cluster_assignments)
 
     await message.answer("Ready. Press /groups to see results.")
@@ -97,7 +88,7 @@ async def groups(message: types.Message):
 
 
 async def ask_question(message: types.Message, user_id):
-    print(message.from_user.id, user_id)
+    # print(message.from_user.id, user_id)
     try:
         row = data[order[str(user_id)]]
     except IndexError:

@@ -15,15 +15,6 @@ class UserAnswer:
         self.database.cursor.execute(f"SELECT * FROM User_Answer where id_user = '{user_id}'")
         return self.database.cursor.fetchall()
 
- def get_data_user_all_questions(self, user_id):
-        """
-        Gets all data from User_Answer database for users who have answered all questions
-        :return: data from User_Answer database
-        """
-        self.database.cursor.execute(f"SELECT * FROM User_Answer WHERE id_user = '{user_id}' "
-                                      "GROUP BY id_user HAVING COUNT(DISTINCT id_question) = (SELECT COUNT(*) FROM Question)")
-        return self.database.cursor.fetchall()
-
     def get_user_answers_data(self, user_id):
         user_answers_data = []
         user_answers_data.append(user_id)
@@ -52,12 +43,12 @@ class UserAnswer:
         self.database.cursor.execute(f"SELECT * FROM User_Answer WHERE id_question = {id_question} and id_user = '{id_user}'")
         id_user_answer = self.database.cursor.fetchone()
         if id_user_answer is None:
-            print("INSERT INTO User_Answer(id_question, id_user, id_answer) "
-                                         f"VALUES({id_question}, '{id_user}', {id_answer})")
+            # print("INSERT INTO User_Answer(id_question, id_user, id_answer) "
+                                         # f"VALUES({id_question}, '{id_user}', {id_answer})")
             self.database.cursor.execute("INSERT INTO User_Answer (id_question, id_user, id_answer)"
                                          f"VALUES({id_question}, '{id_user}', {id_answer})")
         else:
-            print(f"UPDATE User_Answer SET id_answer = {id_answer} WHERE id = {id_user_answer[0]}")
+            # print(f"UPDATE User_Answer SET id_answer = {id_answer} WHERE id = {id_user_answer[0]}")
             self.database.cursor.execute(f"UPDATE User_Answer SET id_answer = {id_answer} WHERE id = {id_user_answer[0]}")
 
         self.database.connection.commit()
