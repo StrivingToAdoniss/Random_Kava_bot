@@ -8,7 +8,7 @@ from Model.Category import categories
 from Model.User_Answer import user_answer
 from admins import admins_list
 import pandas as pd
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,17 +49,15 @@ async def group_users_by_personality(message: types.Message) -> None:
             users_data.remove(i)
         users_data_ids.append(i[0])
     print(users_data)
-    if 6<=len(users_data)<=20:
-        num_categories = round(len(users_data) / 2)
-    elif len(users_data)>=20:
-        num_categories = round(len(users_data)/5)
-    else:
-        num_categories = 1
-    print(num_categories)
-    categories.insert_categories(num_categories)
-    if num_categories>1:
-        kmeans_model = KMeans(n_clusters=num_categories, random_state=42).fit(users_data)
-        cluster_assignments = kmeans_model.predict(users_data)
+    batch_size = 4
+    n_clusters = round(len(users_data) / batch_size)  # Maximum number of clusters
+
+    if n_clusters > 0:
+        model = MiniBatchKMeans(n_clusters=n_clusters, batch_size=batch_size)
+        print(n_clusters)
+        categories.insert_categories(n_clusters)
+        model.fit(users_data)
+        cluster_assignments = model.predict(users_data)
     else:
         cluster_assignments = []
         for _ in users_data:
