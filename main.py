@@ -62,7 +62,10 @@ async def group_users_by_personality(message: types.Message) -> None:
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    user_message = "Привіт, " + message.from_user.username + "\nДля продовження натисни /next."
+    user_message = "Привіт, " + \
+                   message.from_user.username + \
+                   "!\nДля продовження натисни /next. " \
+                   "\nЩоб змінити відповідь,  натисніть на варіант, який хочете обрати."
     await message.answer(user_message)
 
 
