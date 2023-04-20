@@ -1,7 +1,11 @@
 import asyncio
 import logging
+
+import numpy as np
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from Files.classification import Classification
 from Model.Question import questions
 from Model.User import user
 from Model.Category import categories
@@ -44,15 +48,14 @@ async def group_users_by_personality(message: types.Message) -> None:
     n_clusters = round(len(users_data_ids) / batch_size)  # Maximum number of clusters
 
     if n_clusters > 0:
-        model = MiniBatchKMeans(n_clusters=n_clusters, batch_size=batch_size)
-        # print(n_clusters)
-        categories.insert_categories(n_clusters)
-        model.fit(users_answers)
-        cluster_assignments = model.predict(users_answers)
+        classification = Classification(users_data_ids, users_answers, n_clusters)
+        classification.classificate()
+        cluster_assignments = classification.get_groups()
+
     else:
         cluster_assignments = []
         for _ in users_data_ids:
-            cluster_assignments.append(0)
+            cluster_assignments.append(1)
     # print(cluster_assignments)
     user.updateCategory(users_data_ids, cluster_assignments)
 

@@ -32,7 +32,7 @@ class User:
                 # print(category_id)
                 # print(user_id)
                 if self.isUsersById(user_id):
-                    self.database.cursor.execute(f"UPDATE User SET id_category = {int(category_id) + 1} WHERE id = '{user_id}'")
+                    self.database.cursor.execute(f"UPDATE User SET id_category = {int(category_id)} WHERE id = '{user_id}'")
                     self.database.connection.commit()
                     # print()
 
