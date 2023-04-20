@@ -56,37 +56,31 @@ class Classification:
                     if id in element_key and key in element_key:
                         list_keys[element_key] = dict(self.new_matrix)[element_key]
             sorted_list = dict(sorted(list_keys.items(), key=lambda x: x[1], reverse=True))
-            # print('sorted_list', sorted_list)
+            print('sorted_list', sorted_list)
             ind = True
             el_idx = 0
             while ind:
-                res1 = list(sorted_list.keys())[el_idx]
-                keys_list = [*res1]
-                keys_list.remove(id)
-                need_key = keys_list[0]
-                res = Counter(self.groups_dict.values())
-                group = self.groups_dict[need_key]
-                if res[group] < self.cluster_size:
+                if not (len(self.matrix1) % 4 == 1 and ids_elements_without.index(id) == len(ids_elements_without) - 1):
+                    res1 = list(sorted_list.keys())[el_idx]
+                    print(self.groups_dict)
+                    print(res1)
+                    keys_list = [*res1]
+                    keys_list.remove(id)
+                    need_key = keys_list[0]
+                    res = Counter(self.groups_dict.values())
+                    group = self.groups_dict[need_key]
+                    if res[group] < self.cluster_size:
+                        self.groups_dict[id] = self.groups_dict[need_key]
+                        ind = False
+                    else:
+                        el_idx += 1
+                else:
+                    res1 = list(sorted_list.keys())[0]
+                    keys_list = [*res1]
+                    keys_list.remove(id)
+                    need_key = keys_list[0]
                     self.groups_dict[id] = self.groups_dict[need_key]
                     ind = False
-                else:
-                    el_idx += 1
-        res = Counter(self.groups_dict.values())
-        element_1 = [i for i in res if res[i] == 1]
-        if element_1:
-            value_1_element = [i for i in self.groups_dict if self.groups_dict[i] == element_1[0]]
-            new_list_keys = {}
-            for value in value_1_element:
-                for element_key in self.new_matrix.keys():
-                    if value in element_key:
-                        new_list_keys[element_key] = dict(self.new_matrix)[element_key]
-                sorted_list = dict(sorted(new_list_keys.items(), key=lambda x: x[1], reverse=True))
-                # print("sorted_list", sorted_list)
-                res1 = list(sorted_list.keys())[0]
-                keys_list = [*res1]
-                keys_list.remove(value)
-                need_key = keys_list[0]
-                self.groups_dict[value] = self.groups_dict[need_key]
 
     def get_groups(self):
         dict_keys = list(self.groups_dict.keys())

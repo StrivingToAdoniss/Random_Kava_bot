@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import math
 
 import numpy as np
 from aiogram import Bot, Dispatcher, types
@@ -42,10 +43,11 @@ async def group_users_by_personality(message: types.Message) -> None:
         for j in ud:
             answer_of_user.append(j[3])
         users_answers.append(answer_of_user)
-    # print(users_data_ids)
-    # print(users_answers)
+    print(users_data_ids)
+    print(users_answers)
     batch_size = 4
-    n_clusters = round(len(users_data_ids) / batch_size)  # Maximum number of clusters
+    n_clusters = math.ceil(len(users_data_ids) / batch_size)  # Maximum number of clusters
+    categories.insert_categories(n_clusters)
 
     if n_clusters > 0:
         classification = Classification(users_data_ids, users_answers, n_clusters)
