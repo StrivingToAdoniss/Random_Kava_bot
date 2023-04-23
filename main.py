@@ -67,11 +67,42 @@ async def group_users_by_personality(message: types.Message) -> None:
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    user_message = "Привіт, " + \
-                   message.from_user.username + \
-                   "!\nДля продовження натисни /next. " \
-                   "\nЩоб змінити відповідь,  натисніть на варіант, який хочете обрати."
-    await message.answer(user_message)
+
+    await message.answer("Привіт, " +
+                         message.from_user.username +
+                         "!\nБудь ласка, надішліть фото оплати.")
+
+    @dp.message_handler(content_types=types.ContentType.PHOTO)
+    async def process_payment_photo(message: types.Message):
+        await message.forward(chat_id="-962731975")  
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data="valid"))
+        keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data="invalid"))
+        await bot.send_message(chat_id="-962731975", 
+                               text="Будь ласка, перевірте фото оплати.",
+                               reply_markup=keyboard)
+
+        dp.remove_handler(process_payment_photo)
+
+    @dp.callback_query_handler(lambda callback_query: True)
+    async def process_verification_result(callback_query: types.CallbackQuery):
+
+        if callback_query.data == "valid":
+
+            await bot.send_message(chat_id=callback_query.from_user.id,
+                                   text="Дякуємо! Ви можете розпочати відповідати на питання.")
+
+            await bot.send_message(chat_id=callback_query.from_user.id,
+                                   text="/next")  
+        elif callback_query.data == "invalid":
+
+            await bot.send_message(chat_id=callback_query.from_user.id,
+                                   text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
+
+        dp.remove_handler(process_verification_result)
+
+
+
 
 
 @dp.message_handler(commands=['next'])
