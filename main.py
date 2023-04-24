@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import math
+import re
 
 import numpy as np
 from aiogram import Bot, Dispatcher, types
@@ -11,7 +12,7 @@ from Model.Question import questions
 from Model.User import user
 from Model.Category import categories
 from Model.User_Answer import user_answer
-from admins import admins_list
+from admins import admins_list, chat_id
 import pandas as pd
 from sklearn.cluster import MiniBatchKMeans
 
@@ -74,35 +75,31 @@ async def start(message: types.Message):
 
     @dp.message_handler(content_types=types.ContentType.PHOTO)
     async def process_payment_photo(message: types.Message):
-        await message.forward(chat_id="-962731975")  
+        await message.forward(chat_id=chat_id)
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data="valid"))
         keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data="invalid"))
-        await bot.send_message(chat_id="-962731975", 
+        await bot.send_message(chat_id=chat_id,
                                text="Будь ласка, перевірте фото оплати.",
                                reply_markup=keyboard)
 
-        dp.remove_handler(process_payment_photo)
+        # dp.remove_handler(process_payment_photo)
 
-    @dp.callback_query_handler(lambda callback_query: True)
+    @dp.callback_query_handler(lambda c: c.data == "invalid" or c.data == "valid")
     async def process_verification_result(callback_query: types.CallbackQuery):
-
         if callback_query.data == "valid":
 
             await bot.send_message(chat_id=callback_query.from_user.id,
-                                   text="Дякуємо! Ви можете розпочати відповідати на питання.")
+                                   text="Дякуємо! Ви можете розпочати відповідати на питання за допомогою команди /next")
 
-            await bot.send_message(chat_id=callback_query.from_user.id,
-                                   text="/next")  
+            # await bot.send_message(chat_id=callback_query.from_user.id,
+            #                        text="/next")
         elif callback_query.data == "invalid":
 
             await bot.send_message(chat_id=callback_query.from_user.id,
                                    text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
 
-        dp.remove_handler(process_verification_result)
-
-
-
+        # dp.remove_handler(process_verification_result)
 
 
 @dp.message_handler(commands=['next'])
@@ -143,7 +140,7 @@ async def ask_question(message: types.Message, user_id):
         await message.answer(f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n")
 
 
-@dp.callback_query_handler(lambda c: True)
+@dp.callback_query_handler(lambda c: re.match("\d+\s+\d+\s+\d+", c.data))
 async def process_callback_query(callback_query: types.CallbackQuery):
     global order
 
