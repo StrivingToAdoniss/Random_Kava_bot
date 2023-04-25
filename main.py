@@ -3,7 +3,6 @@ import logging
 import math
 import re
 
-import numpy as np
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -13,8 +12,6 @@ from Model.User import user
 from Model.Category import categories
 from Model.User_Answer import user_answer
 from admins import admins_list, chat_id
-import pandas as pd
-from sklearn.cluster import MiniBatchKMeans
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,47 +65,54 @@ async def group_users_by_personality(message: types.Message) -> None:
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-
+    user.insert_user(message.from_user.id, message.from_user.username)
+    print(message.from_user.id)
     await message.answer("Привіт, " +
                          message.from_user.username +
                          "!\nБудь ласка, надішліть фото оплати.")
 
     @dp.message_handler(content_types=types.ContentType.PHOTO)
     async def process_payment_photo(message: types.Message):
-        await message.forward(chat_id=chat_id)
-        keyboard = types.InlineKeyboardMarkup()
-        keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data="valid"))
-        keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data="invalid"))
-        await bot.send_message(chat_id=chat_id,
-                               text="Будь ласка, перевірте фото оплати.",
-                               reply_markup=keyboard)
+        if user.is_screen_valid(message.from_user.id):
+            await bot.send_message(chat_id=message.from_user.id,
+                                   text="Ви вже надіслали фото оплати.")
+        else:
+            await message.forward(chat_id=chat_id)
+            keyboard = types.InlineKeyboardMarkup()
+            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data="valid"))
+            keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data="invalid"))
+            await bot.send_message(chat_id=chat_id,
+                                   text="Будь ласка, перевірте фото оплати.",
+                                   reply_markup=keyboard)
 
-        # dp.remove_handler(process_payment_photo)
+            # dp.remove_handler(process_payment_photo)
 
     @dp.callback_query_handler(lambda c: c.data == "invalid" or c.data == "valid")
     async def process_verification_result(callback_query: types.CallbackQuery):
         if callback_query.data == "valid":
-
+            user.set_screen_valid(message.from_user.id)
+            await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від @{message.from_user.username} прийнято!")
             await bot.send_message(chat_id=callback_query.from_user.id,
-                                   text="Дякуємо! Ви можете розпочати відповідати на питання за допомогою команди /next")
-
-            # await bot.send_message(chat_id=callback_query.from_user.id,
-            #                        text="/next")
+                                   text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
+            order[str(message.from_user.id)] = 0
+            await ask_question(message, message.from_user.id)
         elif callback_query.data == "invalid":
-
+            await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від @{message.from_user.username} відхилено!")
             await bot.send_message(chat_id=callback_query.from_user.id,
                                    text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
 
         # dp.remove_handler(process_verification_result)
 
 
-@dp.message_handler(commands=['next'])
-async def next(message: types.Message):
-    user.insert_user(message.from_user.id, message.from_user.username)
-    print(message.from_user.id)
-    # await message.answer(user.get_data())
-    order[str(message.from_user.id)] = 0
-    await ask_question(message, message.from_user.id)
+# @dp.message_handler(commands=['next'])
+# async def next(message: types.Message):
+#     user.insert_user(message.from_user.id, message.from_user.username)
+#     print(message.from_user.id)
+#     # await message.answer(user.get_data())
+#     order[str(message.from_user.id)] = 0
+#     await ask_question(message, message.from_user.id)
 
 
 @dp.message_handler(commands=['groups'])

@@ -65,6 +65,16 @@ class User:
         res = [item[0] for item in self.database.cursor.fetchall()]
         return res
 
+    def is_screen_valid(self, user_id):
+        self.database.cursor.execute(f"SELECT is_screen FROM User WHERE id = '{user_id}'")
+        res = self.database.cursor.fetchone()
+        # print(res)
+        return res[0]
+
+    def set_screen_valid(self, user_id):
+        if self.isUsersById(user_id):
+            self.database.cursor.execute(f"UPDATE User SET is_screen = 1 WHERE id = '{user_id}'")
+            self.database.connection.commit()
 
 user = User()
 # print(user.isUsersById("795526685"))
