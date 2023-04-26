@@ -67,9 +67,12 @@ async def group_users_by_personality(message: types.Message) -> None:
 async def start(message: types.Message):
     user.insert_user(message.from_user.id, message.from_user.username)
     print(message.from_user.id)
-    await message.answer("Привіт, " +
-                         message.from_user.username +
-                         "!\nБудь ласка, надішліть фото оплати.")
+    if message.from_user.username is None:
+        await message.answer("Привіт!\nБудь ласка, надішліть фото оплати.")
+    else:
+        await message.answer("Привіт, " +
+                             message.from_user.username +
+                             "!\nБудь ласка, надішліть фото оплати.")
 
     @dp.message_handler(content_types=types.ContentType.PHOTO)
     async def process_payment_photo(message: types.Message):
@@ -79,40 +82,44 @@ async def start(message: types.Message):
         else:
             await message.forward(chat_id=chat_id)
             keyboard = types.InlineKeyboardMarkup()
-            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data="valid"))
-            keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data="invalid"))
+            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data=f"valid {message.from_user.id} "
+                                                                                  f"{message.from_user.username}"))
+            keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "
+                                                                                   f"{message.from_user.username}"))
             await bot.send_message(chat_id=chat_id,
                                    text="Будь ласка, перевірте фото оплати.",
                                    reply_markup=keyboard)
 
-            # dp.remove_handler(process_payment_photo)
-
-    @dp.callback_query_handler(lambda c: c.data == "invalid" or c.data == "valid")
+    @dp.callback_query_handler(lambda c: "valid" in c.data)
     async def process_verification_result(callback_query: types.CallbackQuery):
-        if callback_query.data == "valid":
-            user.set_screen_valid(message.from_user.id)
-            await bot.send_message(chat_id=chat_id,
-                                   text=f"Скриншот від @{message.from_user.username} прийнято!")
-            await bot.send_message(chat_id=callback_query.from_user.id,
+        print(callback_query.from_user.id)
+        print(callback_query.from_user.username)
+        data_user = callback_query.data.split(' ')
+        answer = data_user[0]
+        user_id = data_user[1]
+        username = data_user[2]
+        if answer == "valid":
+            user.set_screen_valid(user_id)
+            if username:
+                await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від @{username} прийнято!")
+            else:
+                await bot.send_message(chat_id=chat_id,
+                                       text=f"Скриншот прийнято!")
+
+            await bot.send_message(chat_id=user_id,
                                    text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
-            order[str(message.from_user.id)] = 0
-            await ask_question(message, message.from_user.id)
+            order[str(user_id)] = 0
+            await ask_question(user_id)
         elif callback_query.data == "invalid":
-            await bot.send_message(chat_id=chat_id,
-                                   text=f"Скриншот від @{message.from_user.username} відхилено!")
-            await bot.send_message(chat_id=callback_query.from_user.id,
+            if username:
+                await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від @{username} відхилено!")
+            else:
+                await bot.send_message(chat_id=chat_id,
+                                       text=f"Скриншот від відхилено!")
+            await bot.send_message(chat_id=user_id,
                                    text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
-
-        # dp.remove_handler(process_verification_result)
-
-
-# @dp.message_handler(commands=['next'])
-# async def next(message: types.Message):
-#     user.insert_user(message.from_user.id, message.from_user.username)
-#     print(message.from_user.id)
-#     # await message.answer(user.get_data())
-#     order[str(message.from_user.id)] = 0
-#     await ask_question(message, message.from_user.id)
 
 
 @dp.message_handler(commands=['groups'])
@@ -127,8 +134,7 @@ async def groups(message: types.Message):
         await message.answer("No access.")
 
 
-async def ask_question(message: types.Message, user_id):
-    # print(message.from_user.id, user_id)
+async def ask_question(user_id):
     try:
         row = data[order[str(user_id)]]
     except IndexError:
@@ -139,23 +145,40 @@ async def ask_question(message: types.Message, user_id):
             f"{row['id_question']} {answer['id']} {user_id}") for answer in row['answers']
         ]
         reply_markup = InlineKeyboardMarkup().add(*answer_buttons)
-        await message.answer(row["title"], reply_markup=reply_markup)
+        await bot.send_message(text=f"{row['title']}", reply_markup=reply_markup, chat_id=user_id)
     else:
-        await message.answer(f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n")
+        await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
+                               chat_id=user_id)
 
 
 @dp.callback_query_handler(lambda c: re.match("\d+\s+\d+\s+\d+", c.data))
 async def process_callback_query(callback_query: types.CallbackQuery):
     global order
 
-    await callback_query.answer()
+    # await callback_query.answer()
     answer_user = callback_query.data.split()
     question_id = answer_user[0]
     answer_id = answer_user[1]
     user_id = answer_user[2]
-    user_answer.insert_data(question_id, user_id, answer_id)
-    order[str(user_id)] += 1
-    await ask_question(callback_query.message, user_id)
+    # print(question_id)
+    # print(type(question_id))
+    # print(data[order[str(callback_query.from_user.id)]]["id_question"])
+    # print(type(data[order[str(callback_query.from_user.id)]]["id_question"]))
+    try:
+        if int(data[order[str(callback_query.from_user.id)]]["id_question"]) == int(question_id):
+            print("here")
+
+            user_answer.insert_data(question_id, user_id, answer_id)
+            order[str(user_id)] += 1
+            await ask_question(user_id)
+        else:
+            print("else")
+            user_answer.insert_data(question_id, user_id, answer_id)
+    except IndexError as e:
+        print("except")
+        user_answer.insert_data(question_id, user_id, answer_id)
+        await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
+                               chat_id=user_id)
 
 
 async def main():
