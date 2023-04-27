@@ -49,7 +49,10 @@ class User:
     def getUsernameId(self, user_id):
         self.database.cursor.execute(f"SELECT username FROM User WHERE id = '{user_id}'")
         username = self.database.cursor.fetchone()
-        return username[0]
+        if username is not None:
+            return username[0]
+        else:
+            return None
     def isUsersById(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id = '{user_id}'")
         res = len(self.database.cursor.fetchall()) > 0

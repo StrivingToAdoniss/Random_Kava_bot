@@ -28,7 +28,7 @@ print(data)
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    user.insert_user(message.from_user.id, message.from_user.username)
+
     print(message.from_user.id)
     print(message.from_user.username)
     if not message.from_user.username:
@@ -36,9 +36,10 @@ async def start(message: types.Message):
         button_phone = types.KeyboardButton(text="Поділитися номером",
                                             request_contact=True)
         keyboard.add(button_phone)
-        await bot.send_message(message.chat.id, 'Номер телефона',
+        await bot.send_message(message.chat.id, 'Надішліть номер телефону.',
                                reply_markup=keyboard)
     else:
+        user.insert_user(message.from_user.id, message.from_user.username)
         await message.answer("Привіт, " +
                              message.from_user.username +
                              "!\nБудь ласка, надішліть фото оплати.")
@@ -94,7 +95,7 @@ async def group_users_by_personality(message: types.Message) -> None:
 @dp.message_handler(content_types=types.ContentType.PHOTO)
 async def process_payment_photo(message: types.Message):
     print("here", user.getUsernameId(message.from_user.id))
-    if user.getUsernameId(message.from_user.id):
+    if user.getUsernameId(message.from_user.id) is not None:
         if user.is_screen_valid(message.from_user.id):
             await bot.send_message(chat_id=message.from_user.id,
                                    text="Ви вже надіслали фото оплати.")
@@ -107,6 +108,8 @@ async def process_payment_photo(message: types.Message):
             await bot.send_message(chat_id=chat_id,
                                    text="Будь ласка, перевірте фото оплати.",
                                    reply_markup=keyboard)
+    else:
+        await bot.send_message(message.from_user.id, 'Надішліть номер телефону.')
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
