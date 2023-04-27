@@ -133,7 +133,7 @@ async def process_verification_result(callback_query: types.CallbackQuery):
                                text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
         order[str(user_id)] = 0
         await ask_question(user_id)
-    elif callback_query.data == "invalid":
+    elif answer == "invalid":
         if username:
             await bot.send_message(chat_id=chat_id,
                                    text=f"Скриншот від @{username} відхилено!")
@@ -170,6 +170,8 @@ async def ask_question(user_id):
         await bot.send_message(text=f"{row['title']}", reply_markup=reply_markup, chat_id=user_id)
     else:
         await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
+                               chat_id=user_id)
+        await bot.send_message(text=f"Повідомлення",
                                chat_id=user_id)
 
 
