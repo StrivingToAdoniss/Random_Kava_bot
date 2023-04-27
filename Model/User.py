@@ -18,7 +18,7 @@ class User:
         Inserts data in User database
         """
         if not self.isUsersById(user_id):
-            self.database.cursor.execute\
+            self.database.cursor.execute \
                 (f"INSERT INTO User(id, username, id_category) VALUES('{user_id}', '{username}', NULL)")
             self.database.connection.commit()
 
@@ -32,7 +32,8 @@ class User:
                 # print(category_id)
                 # print(user_id)
                 if self.isUsersById(user_id):
-                    self.database.cursor.execute(f"UPDATE User SET id_category = {int(category_id)} WHERE id = '{user_id}'")
+                    self.database.cursor.execute(
+                        f"UPDATE User SET id_category = {int(category_id)} WHERE id = '{user_id}'")
                     self.database.connection.commit()
                     # print()
 
@@ -45,11 +46,28 @@ class User:
         users = self.database.cursor.fetchall()
         return [i[0] for i in users]
 
+    def getUsernameId(self, user_id):
+        self.database.cursor.execute(f"SELECT username FROM User WHERE id = '{user_id}'")
+        username = self.database.cursor.fetchone()
+        return username[0]
     def isUsersById(self, user_id):
         self.database.cursor.execute(f"SELECT * FROM User WHERE id = '{user_id}'")
         res = len(self.database.cursor.fetchall()) > 0
         # print(res)
         return res
+
+    def updateUsernameNumber(self, user_id, phone_number):
+        """
+        Updates id_category in User database
+        :param data: data in the format id, id_category
+        """
+
+        if self.isUsersById(user_id):
+            self.database.cursor.execute(f"UPDATE User SET username = '{phone_number}' WHERE id = '{user_id}'")
+            self.database.connection.commit()
+            # print()
+        else:
+            self.insert_user(user_id, phone_number)
 
     def get_usernames_by_category_id(self, category_id):
         """
@@ -75,6 +93,7 @@ class User:
         if self.isUsersById(user_id):
             self.database.cursor.execute(f"UPDATE User SET is_screen = 1 WHERE id = '{user_id}'")
             self.database.connection.commit()
+
 
 user = User()
 # print(user.isUsersById("795526685"))

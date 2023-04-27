@@ -25,6 +25,36 @@ data = questions.get_data()
 print(data)
 
 
+# Хендлер на команду /start
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    user.insert_user(message.from_user.id, message.from_user.username)
+    print(message.from_user.id)
+    print(message.from_user.username)
+    if not message.from_user.username:
+        keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+        button_phone = types.KeyboardButton(text="Поділитися номером",
+                                            request_contact=True)
+        keyboard.add(button_phone)
+        await bot.send_message(message.chat.id, 'Номер телефона',
+                               reply_markup=keyboard)
+    else:
+        await message.answer("Привіт, " +
+                             message.from_user.username +
+                             "!\nБудь ласка, надішліть фото оплати.")
+
+
+@dp.message_handler(content_types=['contact'])
+async def contact(message):
+    print("here i am")
+    if message.contact is not None:
+        phone_number = str(message.contact.phone_number)
+        user.updateUsernameNumber(message.contact.user_id, phone_number)
+        keyboard2 = types.ReplyKeyboardRemove()
+        await message.answer('Ви успішно відправили свій номер.\nБудь ласка, надішліть фото оплати.',
+                             reply_markup=keyboard2)
+
+
 @dp.message_handler(commands=['groups_test'])
 async def group_users_by_personality(message: types.Message) -> None:
     print("--------------------------------- Work ---------------------------------")
@@ -58,68 +88,57 @@ async def group_users_by_personality(message: types.Message) -> None:
             cluster_assignments.append(1)
     # print(cluster_assignments)
     user.updateCategory(users_data_ids, cluster_assignments)
-
     await message.answer("Ready. Press /groups to see results.")
 
 
-# Хендлер на команду /start
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
-    user.insert_user(message.from_user.id, message.from_user.username)
-    print(message.from_user.id)
-    if message.from_user.username is None:
-        await message.answer("Привіт!\nБудь ласка, надішліть фото оплати.")
-    else:
-        await message.answer("Привіт, " +
-                             message.from_user.username +
-                             "!\nБудь ласка, надішліть фото оплати.")
-
-    @dp.message_handler(content_types=types.ContentType.PHOTO)
-    async def process_payment_photo(message: types.Message):
+@dp.message_handler(content_types=types.ContentType.PHOTO)
+async def process_payment_photo(message: types.Message):
+    print("here", user.getUsernameId(message.from_user.id))
+    if user.getUsernameId(message.from_user.id):
         if user.is_screen_valid(message.from_user.id):
             await bot.send_message(chat_id=message.from_user.id,
                                    text="Ви вже надіслали фото оплати.")
         else:
             await message.forward(chat_id=chat_id)
             keyboard = types.InlineKeyboardMarkup()
-            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data=f"valid {message.from_user.id} "
-                                                                                  f"{message.from_user.username}"))
-            keyboard.add(types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "
-                                                                                   f"{message.from_user.username}"))
+            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data=f"valid {message.from_user.id} "))
+            keyboard.add(
+                types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "))
             await bot.send_message(chat_id=chat_id,
                                    text="Будь ласка, перевірте фото оплати.",
                                    reply_markup=keyboard)
 
-    @dp.callback_query_handler(lambda c: "valid" in c.data)
-    async def process_verification_result(callback_query: types.CallbackQuery):
-        print(callback_query.from_user.id)
-        print(callback_query.from_user.username)
-        data_user = callback_query.data.split(' ')
-        answer = data_user[0]
-        user_id = data_user[1]
-        username = data_user[2]
-        if answer == "valid":
-            user.set_screen_valid(user_id)
-            if username:
-                await bot.send_message(chat_id=chat_id,
-                                   text=f"Скриншот від @{username} прийнято!")
-            else:
-                await bot.send_message(chat_id=chat_id,
-                                       text=f"Скриншот прийнято!")
 
-            await bot.send_message(chat_id=user_id,
-                                   text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
-            order[str(user_id)] = 0
-            await ask_question(user_id)
-        elif callback_query.data == "invalid":
-            if username:
-                await bot.send_message(chat_id=chat_id,
+@dp.callback_query_handler(lambda c: "valid" in c.data)
+async def process_verification_result(callback_query: types.CallbackQuery):
+    print(callback_query.from_user.id)
+    print(callback_query.from_user.username)
+    data_user = callback_query.data.split(' ')
+    answer = data_user[0]
+    user_id = data_user[1]
+    username = user.getUsernameId(user_id)
+    if answer == "valid":
+        user.set_screen_valid(user_id)
+        if username:
+            await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від @{username} прийнято!")
+        else:
+            await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот прийнято!")
+
+        await bot.send_message(chat_id=user_id,
+                               text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
+        order[str(user_id)] = 0
+        await ask_question(user_id)
+    elif callback_query.data == "invalid":
+        if username:
+            await bot.send_message(chat_id=chat_id,
                                    text=f"Скриншот від @{username} відхилено!")
-            else:
-                await bot.send_message(chat_id=chat_id,
-                                       text=f"Скриншот від відхилено!")
-            await bot.send_message(chat_id=user_id,
-                                   text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
+        else:
+            await bot.send_message(chat_id=chat_id,
+                                   text=f"Скриншот від відхилено!")
+        await bot.send_message(chat_id=user_id,
+                               text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
 
 
 @dp.message_handler(commands=['groups'])
