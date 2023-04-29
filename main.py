@@ -25,12 +25,36 @@ data = questions.get_data()
 print(data)
 
 
+@dp.message_handler(commands=['send_discount'])
+async def test(message: types.Message):
+    for user_id in user.get_users_id_with_valid_screen():
+        keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+        button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
+        keyboard.add(button_send_discount)
+
+        await bot.send_message(user_id, 'Увага увага. Не нажимати і тд і тп',
+                               reply_markup=keyboard)
+
+
+@dp.message_handler(lambda message: message.text == "Так, надіслати знижку.")
+async def process_send_discount(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    if str(user_id) in user.get_users_id_with_valid_screen():
+        if not user.is_discount_set(user_id):
+            keyboard2 = types.ReplyKeyboardRemove()
+            photo_file = "test_photo.jpg"
+            photo_msg = await bot.send_photo(chat_id=user_id, photo=open(photo_file, 'rb'), reply_markup=keyboard2)
+            await asyncio.sleep(10)
+            await bot.delete_message(user_id, photo_msg.message_id)
+            user.set_discount_sent(user_id)
+            await bot.send_message(user_id, "Всьо!")
+        else:
+            await bot.send_message(user_id, "Знижку вже було надіслано!")
+
+
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-
-    print(message.from_user.id)
-    print(message.from_user.username)
     if not message.from_user.username:
         keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
         button_phone = types.KeyboardButton(text="Поділитися номером",
@@ -72,8 +96,6 @@ async def group_users_by_personality(message: types.Message) -> None:
         for j in ud:
             answer_of_user.append(j[3])
         users_answers.append(answer_of_user)
-    print(users_data_ids)
-    print(users_answers)
     batch_size = 4
     n_clusters = math.ceil(len(users_data_ids) / batch_size)  # Maximum number of clusters
     categories.insert_categories(n_clusters)
@@ -130,7 +152,8 @@ async def process_verification_result(callback_query: types.CallbackQuery):
                                    text=f"Скриншот прийнято!")
 
         await bot.send_message(chat_id=user_id,
-                               text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.")
+                               text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.\n"
+                                    "Щоб змінити відповідь, натисніть на варіант, який хочете обрати.")
         order[str(user_id)] = 0
         await ask_question(user_id)
     elif answer == "invalid":
@@ -178,16 +201,10 @@ async def ask_question(user_id):
 @dp.callback_query_handler(lambda c: re.match("\d+\s+\d+\s+\d+", c.data))
 async def process_callback_query(callback_query: types.CallbackQuery):
     global order
-
-    # await callback_query.answer()
     answer_user = callback_query.data.split()
     question_id = answer_user[0]
     answer_id = answer_user[1]
     user_id = answer_user[2]
-    # print(question_id)
-    # print(type(question_id))
-    # print(data[order[str(callback_query.from_user.id)]]["id_question"])
-    # print(type(data[order[str(callback_query.from_user.id)]]["id_question"]))
     try:
         if int(data[order[str(callback_query.from_user.id)]]["id_question"]) == int(question_id):
             print("here")

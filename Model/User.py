@@ -97,6 +97,21 @@ class User:
             self.database.cursor.execute(f"UPDATE User SET is_screen = 1 WHERE id = '{user_id}'")
             self.database.connection.commit()
 
+    def get_users_id_with_valid_screen(self):
+        self.database.cursor.execute(f"SELECT id FROM User where is_screen = 1")
+        users = self.database.cursor.fetchall()
+        return [i[0] for i in users]
+
+    def is_discount_set(self, user_id):
+        self.database.cursor.execute(f"SELECT is_discount FROM User WHERE id = '{user_id}'")
+        res = self.database.cursor.fetchone()
+        # print(res)
+        return res[0]
+
+    def set_discount_sent(self, user_id):
+        if self.isUsersById(user_id):
+            self.database.cursor.execute(f"UPDATE User SET is_discount = 1 WHERE id = '{user_id}'")
+            self.database.connection.commit()
 
 user = User()
 # print(user.isUsersById("795526685"))
