@@ -73,7 +73,7 @@ class Classification:
                     el_idx += 1
         print(self.groups_dict)
 
-        if self.remainder != 0:
+        if self.remainder != 0 and len(self.ids)>self.cluster_size:
             print("hereeeeeeeeeeeeee")
             lack_users = []
             res = Counter(self.groups_dict.values())
