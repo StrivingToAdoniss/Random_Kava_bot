@@ -27,13 +27,17 @@ print(data)
 
 @dp.message_handler(commands=['send_discount'])
 async def test(message: types.Message):
-    for user_id in user.get_users_id_with_valid_screen():
-        keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-        button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
-        keyboard.add(button_send_discount)
+    if str(message.from_user.id) not in admins_list:
+        await message.answer("No access.")
+        return
+    else:
+        for user_id in user.get_users_all_questions():
+            keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+            button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
+            keyboard.add(button_send_discount)
 
-        await bot.send_message(user_id, 'Увага увага. Не нажимати і тд і тп',
-                               reply_markup=keyboard)
+            await bot.send_message(user_id, 'Увага увага. Не нажимати і тд і тп',
+                                   reply_markup=keyboard)
 
 
 @dp.message_handler(lambda message: message.text == "Так, надіслати знижку.")
@@ -136,8 +140,6 @@ async def process_payment_photo(message: types.Message):
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
 async def process_verification_result(callback_query: types.CallbackQuery):
-    print(callback_query.from_user.id)
-    print(callback_query.from_user.username)
     data_user = callback_query.data.split(' ')
     answer = data_user[0]
     user_id = data_user[1]
@@ -194,7 +196,8 @@ async def ask_question(user_id):
     else:
         await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
-        await bot.send_message(text=f"Повідомлення",
+        await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді, і незабаром ти дізнаєшся про свою "
+                                    f"групу та знижки в Кофі-Шопі. \nДуже дякуємо, що ти з нами в цьому проєкті!",
                                chat_id=user_id)
 
 
@@ -205,7 +208,7 @@ async def process_callback_query(callback_query: types.CallbackQuery):
     question_id = answer_user[0]
     answer_id = answer_user[1]
     user_id = answer_user[2]
-    try:
+    if str(callback_query.from_user.id) in order.keys():
         if int(data[order[str(callback_query.from_user.id)]]["id_question"]) == int(question_id):
             print("here")
 
@@ -215,7 +218,7 @@ async def process_callback_query(callback_query: types.CallbackQuery):
         else:
             print("else")
             user_answer.insert_data(question_id, user_id, answer_id)
-    except IndexError as e:
+    else:
         print("except")
         user_answer.insert_data(question_id, user_id, answer_id)
         await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
