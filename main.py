@@ -93,6 +93,7 @@ async def group_users_by_personality(message: types.Message) -> None:
         return
 
     users_data_ids = user.get_users_all_questions()
+    print(users_data_ids)
     users_answers = []
     for i in range(len(users_data_ids)):
         ud = user_answer.get_data_user(users_data_ids[i])
@@ -208,7 +209,7 @@ async def process_callback_query(callback_query: types.CallbackQuery):
     question_id = answer_user[0]
     answer_id = answer_user[1]
     user_id = answer_user[2]
-    if str(callback_query.from_user.id) in order.keys():
+    try:
         if int(data[order[str(callback_query.from_user.id)]]["id_question"]) == int(question_id):
             print("here")
 
@@ -218,7 +219,7 @@ async def process_callback_query(callback_query: types.CallbackQuery):
         else:
             print("else")
             user_answer.insert_data(question_id, user_id, answer_id)
-    else:
+    except IndexError as e:
         print("except")
         user_answer.insert_data(question_id, user_id, answer_id)
         await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
