@@ -15,7 +15,7 @@ from admins import admins_list, chat_id
 
 logging.basicConfig(level=logging.INFO)
 
-token = '6211270631:AAHjLGInSIPzGaTvEe2bWcq_L2UxNWYcq2o'
+token = '6105836630:AAGLIAYZH5xO2UH8C5cmKqXv_7YalKh-5dU'
 bot = Bot(token)
 # Диспетчер
 dp = Dispatcher(bot)
