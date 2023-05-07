@@ -49,7 +49,7 @@ async def process_send_discount(callback_query: types.CallbackQuery):
     if str(user_id) in user.get_users_id_with_valid_screen():
         if not user.is_discount_set(user_id):
             keyboard2 = types.ReplyKeyboardRemove()
-            photo_file = "test_photo.jpg"
+            photo_file = "Знижка.png"
             photo_msg = await bot.send_photo(chat_id=user_id, photo=open(photo_file, 'rb'), reply_markup=keyboard2)
             await asyncio.sleep(60)
             await bot.delete_message(user_id, photo_msg.message_id)
