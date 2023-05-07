@@ -36,7 +36,10 @@ async def test(message: types.Message):
             button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
             keyboard.add(button_send_discount)
 
-            await bot.send_message(user_id, 'Увага увага. Не нажимати і тд і тп',
+            await bot.send_message(user_id, f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Кофі-шоп».\n"
+                                            f"Ти зможеш скористатися знижкою один раз з 15.05 до 15.06. "
+                                            f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото баристі.\n\n"
+                                            f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
 
 
@@ -48,7 +51,7 @@ async def process_send_discount(callback_query: types.CallbackQuery):
             keyboard2 = types.ReplyKeyboardRemove()
             photo_file = "test_photo.jpg"
             photo_msg = await bot.send_photo(chat_id=user_id, photo=open(photo_file, 'rb'), reply_markup=keyboard2)
-            await asyncio.sleep(10)
+            await asyncio.sleep(60)
             await bot.delete_message(user_id, photo_msg.message_id)
             user.set_discount_sent(user_id)
             await bot.send_message(user_id, "Всьо!")
@@ -197,8 +200,8 @@ async def ask_question(user_id):
     else:
         await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
-        await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді, і незабаром ти дізнаєшся про свою "
-                                    f"групу та знижки в Кофі-Шопі. \nДуже дякуємо, що ти з нами в цьому проєкті!",
+        await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді! Незабаром ти дізнаєшся про свою "
+                                    f"групу та знижки в закладі «Кофі-шоп». \nЩиро дякуємо, що ти з нами в цьому проєкті!",
                                chat_id=user_id)
 
 
