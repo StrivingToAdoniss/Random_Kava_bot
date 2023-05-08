@@ -73,7 +73,12 @@ async def start(message: types.Message):
         user.insert_user(message.from_user.id, message.from_user.username)
         await message.answer("Привіт, " +
                              message.from_user.username +
-                             "!\nБудь ласка, надішліть фото оплати.")
+                             "!\nБудь ласка, надішли фото донату від 50 грн."
+                             f"\n\nНа скріншоті має бути видно дату, отримувача і суму."
+                             f"\n\n\U0001F517Посилання на банку"
+                             f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                             f"\n\n\U0001F4B3Номер картки банки"
+                             f"5375 4112 0341 4979")
 
 
 @dp.message_handler(content_types=['contact'])
