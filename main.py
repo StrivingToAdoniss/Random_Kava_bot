@@ -94,8 +94,7 @@ async def contact(message):
                              f"\n\n\U0001F517Посилання на банку"
                              f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
                              f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0341 4979")
-,
+                             f"\n5375 4112 0341 4979",
                              reply_markup=keyboard2)
 
 
