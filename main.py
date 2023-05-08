@@ -78,7 +78,7 @@ async def start(message: types.Message):
                              f"\n\n\U0001F517Посилання на банку"
                              f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
                              f"\n\n\U0001F4B3Номер картки банки"
-                             f"5375 4112 0341 4979")
+                             f"\n5375 4112 0341 4979")
 
 
 @dp.message_handler(content_types=['contact'])
@@ -88,7 +88,14 @@ async def contact(message):
         phone_number = str(message.contact.phone_number)
         user.updateUsernameNumber(message.contact.user_id, phone_number)
         keyboard2 = types.ReplyKeyboardRemove()
-        await message.answer('Ви успішно відправили свій номер.\nБудь ласка, надішліть фото оплати.',
+        await message.answer(f"Номер успішно відправлено."
+                             f"\nБудь ласка, надішли фото донату від 50 грн."
+                             f"\n\nНа скріншоті має бути видно дату, отримувача і суму."
+                             f"\n\n\U0001F517Посилання на банку"
+                             f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                             f"\n\n\U0001F4B3Номер картки банки"
+                             f"\n5375 4112 0341 4979")
+,
                              reply_markup=keyboard2)
 
 
