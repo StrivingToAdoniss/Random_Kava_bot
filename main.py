@@ -54,7 +54,7 @@ async def process_send_discount(callback_query: types.CallbackQuery):
             await asyncio.sleep(60)
             await bot.delete_message(user_id, photo_msg.message_id)
             user.set_discount_sent(user_id)
-            await bot.send_message(user_id, "Всьо!")
+            await bot.send_message(user_id, "Фото зі знижкою було надіслане!")
         else:
             await bot.send_message(user_id, "Знижку вже було надіслано!")
 
@@ -67,14 +67,14 @@ async def start(message: types.Message):
         button_phone = types.KeyboardButton(text="Поділитися номером",
                                             request_contact=True)
         keyboard.add(button_phone)
-        await bot.send_message(message.chat.id, 'Надішліть номер телефону.',
+        await bot.send_message(message.chat.id, 'Надішли свій номер телефону.',
                                reply_markup=keyboard)
     else:
         user.insert_user(message.from_user.id, message.from_user.username)
         await message.answer("Привіт, " +
                              message.from_user.username +
                              "!\nБудь ласка, надішли фото донату від 50 грн."
-                             f"\n\nНа скріншоті має бути видно дату, отримувача і суму."
+                             f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                              f"\n\n\U0001F517Посилання на банку"
                              f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
                              f"\n\n\U0001F4B3Номер картки банки"
@@ -90,7 +90,7 @@ async def contact(message):
         keyboard2 = types.ReplyKeyboardRemove()
         await message.answer(f"Номер успішно відправлено."
                              f"\nБудь ласка, надішли фото донату від 50 грн."
-                             f"\n\nНа скріншоті має бути видно дату, отримувача і суму."
+                             f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                              f"\n\n\U0001F517Посилання на банку"
                              f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
                              f"\n\n\U0001F4B3Номер картки банки"
@@ -139,7 +139,7 @@ async def process_payment_photo(message: types.Message):
     if user.getUsernameId(message.from_user.id) is not None:
         if user.is_screen_valid(message.from_user.id):
             await bot.send_message(chat_id=message.from_user.id,
-                                   text="Ви вже надіслали фото оплати.")
+                                   text="Ти вже надіслав своє фото оплати.")
         else:
             await message.forward(chat_id=chat_id)
             keyboard = types.InlineKeyboardMarkup()
@@ -147,10 +147,10 @@ async def process_payment_photo(message: types.Message):
             keyboard.add(
                 types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "))
             await bot.send_message(chat_id=chat_id,
-                                   text="Будь ласка, перевірте фото оплати.",
+                                   text="Будь ласка, перевір фото оплати.",
                                    reply_markup=keyboard)
     else:
-        await bot.send_message(message.from_user.id, 'Надішліть номер телефону.')
+        await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
@@ -169,8 +169,8 @@ async def process_verification_result(callback_query: types.CallbackQuery):
                                    text=f"Скриншот прийнято!")
 
         await bot.send_message(chat_id=user_id,
-                               text="Дякуємо! Скриншот прийнято! Ви можете розпочати відповідати на питання.\n"
-                                    "Щоб змінити відповідь, натисніть на варіант, який хочете обрати.")
+                               text="Дякуємо! Скриншот прийнято! Ти можеш розпочати відповідати на питання.\n"
+                                    "Щоб змінити відповідь, натисни на варіант, який хочете обрати.")
         order[str(user_id)] = 0
         await ask_question(user_id)
     elif answer == "invalid":
@@ -181,7 +181,7 @@ async def process_verification_result(callback_query: types.CallbackQuery):
             await bot.send_message(chat_id=chat_id,
                                    text=f"Скриншот від відхилено!")
         await bot.send_message(chat_id=user_id,
-                               text="Фото оплати недійсне. Будь ласка, надішліть валідне фото оплати.")
+                               text="Фото оплати недійсне. Будь ласка, надішли валідне фото оплати.")
 
 
 @dp.message_handler(commands=['groups'])
@@ -236,7 +236,7 @@ async def process_callback_query(callback_query: types.CallbackQuery):
     except IndexError as e:
         print("except")
         user_answer.insert_data(question_id, user_id, answer_id)
-        await bot.send_message(text=f"Дякую за відповідь!\nВаші відповіді:\n{user_answer.print(user_id)}\n",
+        await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
 
 
