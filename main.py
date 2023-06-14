@@ -4,7 +4,7 @@ import math
 import re
 
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 
 from Files.classification import Classification
 from Model.Question import questions
@@ -23,6 +23,33 @@ order = {}
 data = questions.get_data()
 
 print(data)
+
+
+@dp.message_handler(commands=['send_test'])
+async def test(message: types.Message):
+    if str(message.from_user.id) not in admins_list:
+        await message.answer("No access.")
+        return
+    else:
+            await bot.send_message("795526685", text=f"Наш проєкт добігає кінця!\n"
+                    f"Будемо тобі дуже вдячні, якщо ти заповниш "
+                    f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                    f"для майбутнього розвитку і вдосконалення проєкту!",
+                    parse_mode=ParseMode.HTML)
+@dp.message_handler(commands=['send_form'])
+async def test(message: types.Message):
+    if str(message.from_user.id) not in admins_list:
+        await message.answer("No access.")
+        return
+    else:
+        for user_id in user.get_users_all_questions():
+
+            await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
+                    f"Будемо тобі дуже вдячні, якщо ти заповниш "
+                    f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                    f"для майбутнього розвитку і вдосконалення проєкту!",
+                    parse_mode=ParseMode.HTML)
+
 
 
 @dp.message_handler(commands=['send_discount'])
