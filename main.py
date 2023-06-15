@@ -42,8 +42,7 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-        desired_ids = ['983131514', '795526685'] 
-        for user_id in desired_ids:
+        for user_id in user.get_users_all_questions():
 
             await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
                     f"Будемо тобі дуже вдячні, якщо ти заповниш "
