@@ -5,6 +5,7 @@ import re
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from aiogram.utils.exceptions import BotBlocked
 
 from Files.classification import Classification
 from Model.Question import questions
@@ -31,25 +32,30 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-            await bot.send_message("795526685", text=f"Наш проєкт добігає кінця!\n"
+        await bot.send_message("795526685", text=f"Наш проєкт добігає кінця!\n"
                     f"Будемо тобі дуже вдячні, якщо ти заповниш "
                     f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
                     f"для майбутнього розвитку і вдосконалення проєкту!",
                     parse_mode=ParseMode.HTML)
+
+
 @dp.message_handler(commands=['send_form'])
 async def test(message: types.Message):
     if str(message.from_user.id) not in admins_list:
         await message.answer("No access.")
         return
     else:
-        desired_ids = ['362212345', '754227110', '529960023', '459776585', '811574040', '382480527', '464899874', '670039201', '528072383', '619747411', '631864740', '390073825', '331409166', '950906653', '393993453', '565135407', '514614975', '875949982', '656942369', '492540232', '401416871', '543055191', '368655380', '614773156', '444149805', '790460531', '425649959', '606598755', '346614525', '383039502', '501806427', '797990570', '491594603', '382221513', '394082879', '878750549', '511985441', '394241195', '262119708', '367145490', '382199598', '664643986', '461168480', '665368776', '500807235', '1411137898', '222339337', '526198813', '808523191', '449297868', '631741081', '905143300', '1441674387', '729384976', '344282058', '945755425', '498465769', '722703266', '637981787', '726035824', '553617673', '620822817', '576544336', '888926245', '527102268', '673266974']
-        for user_id in desired_ids:
-
-            await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
-                    f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                    f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
-                    f"для майбутнього розвитку і вдосконалення проєкту!",
-                    parse_mode=ParseMode.HTML)
+        for user_id in user.get_users_all_questions():
+            try:
+                print("sent")
+                await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
+                                                     f"Будемо тобі дуже вдячні, якщо ти заповниш "
+                                                     f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                                                     f"для майбутнього розвитку і вдосконалення проєкту!",
+                                       parse_mode=ParseMode.HTML)
+            except BotBlocked as e:
+                print("Attention please! The user {} has blocked the bot. I can't send anything to them".format(
+                    message.chat.id))
 
 
 
