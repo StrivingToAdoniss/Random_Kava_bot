@@ -42,7 +42,7 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-        for user_id in user.get_users_all_questions():
+        for user_id in user.get_users_id_with_valid_screen():
 
             await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
                     f"Будемо тобі дуже вдячні, якщо ти заповниш "
