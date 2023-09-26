@@ -2,6 +2,7 @@ import asyncio
 import logging
 import math
 import re
+import datetime
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
@@ -22,6 +23,7 @@ bot = Bot(token)
 dp = Dispatcher(bot)
 order = {}
 data = questions.get_data()
+deadline = datetime.date(2023, 9, 26)
 
 print(data)
 
@@ -70,9 +72,9 @@ async def test(message: types.Message):
             button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
             keyboard.add(button_send_discount)
 
-            await bot.send_message(user_id, f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Кофі-шоп».\n"
+            await bot.send_message(user_id, f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Big Mama».\n"
                                             f"Ти зможеш скористатися знижкою один раз з 15.05 до 15.06. "
-                                            f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото баристі.\n\n"
+                                            f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото на касі.\n\n"
                                             f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
 
@@ -96,23 +98,27 @@ async def process_send_discount(callback_query: types.CallbackQuery):
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    if not message.from_user.username:
-        keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-        button_phone = types.KeyboardButton(text="Поділитися номером",
-                                            request_contact=True)
-        keyboard.add(button_phone)
-        await bot.send_message(message.chat.id, 'Надішли свій номер телефону.',
-                               reply_markup=keyboard)
+    if datetime.date.today() != deadline:
+        if not message.from_user.username:
+            keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+            button_phone = types.KeyboardButton(text="Поділитися номером",
+                                                request_contact=True)
+            keyboard.add(button_phone)
+            await bot.send_message(message.chat.id, 'Надішли свій номер телефону.',
+                                   reply_markup=keyboard)
+        else:
+            user.insert_user(message.from_user.id, message.from_user.username)
+            await message.answer("Привіт, " +
+                                 message.from_user.username +
+                                 "!\nБудь ласка, надішли фото донату від 50 грн."
+                                 f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
+                                 f"\n\n\U0001F517Посилання на банку"
+                                 f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                                 f"\n\n\U0001F4B3Номер картки банки"
+                                 f"\n5375 4112 0341 4979")
     else:
-        user.insert_user(message.from_user.id, message.from_user.username)
-        await message.answer("Привіт, " +
-                             message.from_user.username +
-                             "!\nБудь ласка, надішли фото донату від 50 грн."
-                             f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
-                             f"\n\n\U0001F517Посилання на банку"
-                             f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
-                             f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0341 4979")
+        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+                             f" тут буде банка ")
 
 
 @dp.message_handler(content_types=['contact'])
@@ -193,6 +199,10 @@ async def process_verification_result(callback_query: types.CallbackQuery):
     answer = data_user[0]
     user_id = data_user[1]
     username = user.getUsernameId(user_id)
+    await bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id,
+                                        message_id=callback_query.message.message_id,
+                                        reply_markup=None)
+
     if answer == "valid":
         user.set_screen_valid(user_id)
         if username:
@@ -246,7 +256,7 @@ async def ask_question(user_id):
         await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
         await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді! Незабаром ти дізнаєшся про свою "
-                                    f"групу та знижки в закладі «Кофі-шоп». \nЩиро дякуємо, що ти з нами в цьому проєкті!",
+                                    f"групу та знижки в закладі «Big Mama». \nЩиро дякуємо, що ти з нами в цьому проєкті!",
                                chat_id=user_id)
 
 
