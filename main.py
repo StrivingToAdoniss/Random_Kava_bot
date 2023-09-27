@@ -60,7 +60,6 @@ async def test(message: types.Message):
                     message.chat.id))
 
 
-
 @dp.message_handler(commands=['send_discount'])
 async def test(message: types.Message):
     if str(message.from_user.id) not in admins_list:
@@ -98,7 +97,7 @@ async def process_send_discount(callback_query: types.CallbackQuery):
 # Хендлер на команду /start
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    if datetime.date.today() != deadline:
+    if datetime.date.today() < deadline:
         if not message.from_user.username:
             keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
             button_phone = types.KeyboardButton(text="Поділитися номером",
@@ -123,19 +122,22 @@ async def start(message: types.Message):
 
 @dp.message_handler(content_types=['contact'])
 async def contact(message):
-    print("here i am")
-    if message.contact is not None:
-        phone_number = str(message.contact.phone_number)
-        user.updateUsernameNumber(message.contact.user_id, phone_number)
-        keyboard2 = types.ReplyKeyboardRemove()
-        await message.answer(f"Номер успішно відправлено."
-                             f"\nБудь ласка, надішли фото донату від 50 грн."
-                             f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
-                             f"\n\n\U0001F517Посилання на банку"
-                             f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
-                             f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0341 4979",
-                             reply_markup=keyboard2)
+    if datetime.date.today() < deadline:
+        if message.contact is not None:
+            phone_number = str(message.contact.phone_number)
+            user.updateUsernameNumber(message.contact.user_id, phone_number)
+            keyboard2 = types.ReplyKeyboardRemove()
+            await message.answer(f"Номер успішно відправлено."
+                                 f"\nБудь ласка, надішли фото донату від 50 грн."
+                                 f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
+                                 f"\n\n\U0001F517Посилання на банку"
+                                 f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                                 f"\n\n\U0001F4B3Номер картки банки"
+                                 f"\n5375 4112 0341 4979",
+                                 reply_markup=keyboard2)
+    else:
+        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+                             f" тут буде банка ")
 
 
 @dp.message_handler(commands=['groups_test'])
@@ -175,22 +177,26 @@ async def group_users_by_personality(message: types.Message) -> None:
 
 @dp.message_handler(content_types=types.ContentType.PHOTO)
 async def process_payment_photo(message: types.Message):
-    print("here", user.getUsernameId(message.from_user.id))
-    if user.getUsernameId(message.from_user.id) is not None:
-        if user.is_screen_valid(message.from_user.id):
-            await bot.send_message(chat_id=message.from_user.id,
-                                   text="Ти вже надіслав своє фото оплати.")
+    if datetime.date.today() < deadline:
+        print("here", user.getUsernameId(message.from_user.id))
+        if user.getUsernameId(message.from_user.id) is not None:
+            if user.is_screen_valid(message.from_user.id):
+                await bot.send_message(chat_id=message.from_user.id,
+                                       text="Ти вже надіслав своє фото оплати.")
+            else:
+                await message.forward(chat_id=chat_id)
+                keyboard = types.InlineKeyboardMarkup()
+                keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data=f"valid {message.from_user.id} "))
+                keyboard.add(
+                    types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "))
+                await bot.send_message(chat_id=chat_id,
+                                       text="Будь ласка, перевір фото оплати.",
+                                       reply_markup=keyboard)
         else:
-            await message.forward(chat_id=chat_id)
-            keyboard = types.InlineKeyboardMarkup()
-            keyboard.add(types.InlineKeyboardButton(text="Валідна", callback_data=f"valid {message.from_user.id} "))
-            keyboard.add(
-                types.InlineKeyboardButton(text="Недійсна", callback_data=f"invalid {message.from_user.id} "))
-            await bot.send_message(chat_id=chat_id,
-                                   text="Будь ласка, перевір фото оплати.",
-                                   reply_markup=keyboard)
+            await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
     else:
-        await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
+        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+                             f" тут буде банка ")
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
