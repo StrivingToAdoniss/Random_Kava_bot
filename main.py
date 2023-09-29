@@ -17,8 +17,9 @@ from admins import admins_list, chat_id
 
 logging.basicConfig(level=logging.INFO)
 
-token = '6105836630:AAGLIAYZH5xO2UH8C5cmKqXv_7YalKh-5dU'
-bot = Bot(token)
+kava_token = '6105836630:AAGLIAYZH5xO2UH8C5cmKqXv_7YalKh-5dU'
+roll_token = '6499628008:AAGfenfjHSrUd5M7Ix4h6jc1Why1LLiPUsU'
+bot = Bot(roll_token)
 # Диспетчер
 dp = Dispatcher(bot)
 order = {}
