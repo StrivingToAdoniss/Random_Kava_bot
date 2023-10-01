@@ -24,7 +24,7 @@ bot = Bot(roll_token)
 dp = Dispatcher(bot)
 order = {}
 data = questions.get_data()
-deadline = datetime.date(2023, 9, 26)
+deadline = datetime.date(2023, 10, 7)
 
 print(data)
 
@@ -73,7 +73,7 @@ async def test(message: types.Message):
             keyboard.add(button_send_discount)
 
             await bot.send_message(user_id, f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Big Mama».\n"
-                                            f"Ти зможеш скористатися знижкою один раз з 15.05 до 15.06. "
+                                            f"Ти зможеш скористатися знижкою один раз з 09.10 до 09.11. "
                                             f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото на касі.\n\n"
                                             f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
