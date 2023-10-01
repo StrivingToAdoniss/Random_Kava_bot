@@ -113,9 +113,9 @@ async def start(message: types.Message):
                                  "!\nБудь ласка, надішли фото донату від 50 грн."
                                  f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                                  f"\n\n\U0001F517Посилання на банку"
-                                 f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                                 f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
                                  f"\n\n\U0001F4B3Номер картки банки"
-                                 f"\n5375 4112 0341 4979")
+                                 f"\n5375 4112 0976 3767")
     else:
         await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
                              f" тут буде банка ")
@@ -132,9 +132,9 @@ async def contact(message):
                                  f"\nБудь ласка, надішли фото донату від 50 грн."
                                  f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                                  f"\n\n\U0001F517Посилання на банку"
-                                 f"\nhttps://send.monobank.ua/jar/3nfPJJfvVR"
+                                 f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
                                  f"\n\n\U0001F4B3Номер картки банки"
-                                 f"\n5375 4112 0341 4979",
+                                 f"\n5375 4112 0976 3767",
                                  reply_markup=keyboard2)
     else:
         await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
@@ -197,7 +197,10 @@ async def process_payment_photo(message: types.Message):
             await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
     else:
         await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
-                             f" тут буде банка ")
+                             f"\n\n\U0001F517Посилання на банку"
+                             f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+                             f"\n\n\U0001F4B3Номер картки банки"
+                             f"\n5375 4112 0976 3767")
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
