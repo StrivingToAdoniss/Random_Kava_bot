@@ -196,7 +196,7 @@ async def process_payment_photo(message: types.Message):
         else:
             await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
     else:
-        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту та не забувай підтримувати ЗСУ!"
                              f"\n\n\U0001F517Посилання на банку"
                              f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
                              f"\n\n\U0001F4B3Номер картки банки"
@@ -266,7 +266,14 @@ async def ask_question(user_id):
         await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
         await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді! Незабаром ти дізнаєшся про свою "
-                                    f"групу та знижки в закладі «Big Mama». \nЩиро дякуємо, що ти з нами в цьому проєкті!",
+                                    f"групу та знижки в закладі «Big Mama». 
+                                    f"\n\nТакож ти зможеш отримати промокод на знижку 10% від  «Lord of boards»."
+                                    f"Для цього потрібно зареєструватися на сайті:"
+                                    f"https://lordofboards.com.ua/"
+                                    f", потім написати в телеграм @Lord_of_Boards «Я з КПІ Random roll»"
+                                    f"і емейл за яким зареєструвався."
+                                    f"Знижка діятиме місяць з моменту отримання коду."
+                                    f"\n\nЩиро дякуємо, що ти з нами в цьому проєкті!",
                                chat_id=user_id)
 
 
