@@ -266,7 +266,7 @@ async def ask_question(user_id):
         await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
         await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді! Незабаром ти дізнаєшся про свою "
-                                    f"групу та знижки в закладі «Big Mama». 
+                                    f"групу та знижки в закладі «Big Mama»."
                                     f"\n\nТакож ти зможеш отримати промокод на знижку 10% від  «Lord of boards»."
                                     f"Для цього потрібно зареєструватися на сайті:"
                                     f"https://lordofboards.com.ua/"
