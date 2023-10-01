@@ -256,11 +256,11 @@ async def ask_question(user_id):
     except IndexError:
         row = None
     if row is not None:
-        answer_buttons = [
-            InlineKeyboardButton(answer['title'], callback_data=
-            f"{row['id_question']} {answer['id']} {user_id}") for answer in row['answers']
-        ]
-        reply_markup = InlineKeyboardMarkup().add(*answer_buttons)
+        reply_markup = InlineKeyboardMarkup()
+        for answer in row['answers']:
+            reply_markup.add(InlineKeyboardButton(answer['title'], callback_data=
+            f"{row['id_question']} {answer['id']} {user_id}"))
+
         await bot.send_message(text=f"{row['title']}", reply_markup=reply_markup, chat_id=user_id)
     else:
         await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
