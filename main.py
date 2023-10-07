@@ -24,7 +24,7 @@ bot = Bot(roll_token)
 dp = Dispatcher(bot)
 order = {}
 data = questions.get_data()
-deadline = datetime.date(2023, 10, 8)
+deadline = datetime.date(2023, 10, 9)
 
 print(data)
 
