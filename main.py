@@ -120,7 +120,7 @@ async def start(message: types.Message):
         await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
                              f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
                              f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0976 3767")")
+                             f"\n5375 4112 0976 3767")
 
 
 @dp.message_handler(content_types=['contact'])
