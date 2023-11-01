@@ -102,6 +102,11 @@ class User:
         users = self.database.cursor.fetchall()
         return [i[0] for i in users]
 
+    def get_users_id_without_discount_sent(self):
+        self.database.cursor.execute(f"SELECT id FROM User where is_discount = 0 and is_screen = 1")
+        users = self.database.cursor.fetchall()
+        return [i[0] for i in users]
+
     def is_discount_set(self, user_id):
         self.database.cursor.execute(f"SELECT is_discount FROM User WHERE id = '{user_id}'")
         res = self.database.cursor.fetchone()

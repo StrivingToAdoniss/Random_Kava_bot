@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 kava_token = '6105836630:AAGLIAYZH5xO2UH8C5cmKqXv_7YalKh-5dU'
 roll_token = '6499628008:AAGfenfjHSrUd5M7Ix4h6jc1Why1LLiPUsU'
-bot = Bot(roll_token)
+bot = Bot(kava_token)
 # Диспетчер
 dp = Dispatcher(bot)
 order = {}
@@ -78,6 +78,39 @@ async def test(message: types.Message):
                                             f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
 
+
+@dp.message_handler(commands=['send_reminder'])
+async def test(message: types.Message):
+    if str(message.from_user.id) not in admins_list:
+        await message.answer("No access.")
+        return
+    else:
+        for user_id in user.user.get_users_all_questions():
+            await bot.send_message(user_id, f"Привіт це <b>RandomRoll бот</b>\n\n"
+                                            f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
+                                            f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
+                                            f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
+                                            f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
+                                            f"Якщо ти вже зустрівся з групою, то "
+                                            f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
+                                            f"щоб з кожним разом проєкт ставав краще.",
+                                   parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
+@dp.message_handler(commands=['send_reminder_test'])
+async def test(message: types.Message):
+    if str(message.from_user.id) not in admins_list:
+        await message.answer("No access.")
+        return
+    else:
+            await bot.send_message("795526685", f"Привіт це <b>RandomRoll бот</b>\n\n"
+                                            f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
+                                            f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
+                                            f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
+                                            f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
+                                            f"Якщо ти вже зустрівся з групою, то "
+                                            f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
+                                            f"щоб з кожним разом проєкт ставав краще.",
+                                   parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 @dp.message_handler(lambda message: message.text == "Так, надіслати знижку.")
 async def process_send_discount(callback_query: types.CallbackQuery):
