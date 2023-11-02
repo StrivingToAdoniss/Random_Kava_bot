@@ -85,7 +85,7 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-        for user_id in user.user.get_users_all_questions():
+        for user_id in user.get_users_all_questions():
             await bot.send_message(user_id, f"Привіт це <b>RandomRoll бот</b>\n\n"
                                             f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
                                             f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
