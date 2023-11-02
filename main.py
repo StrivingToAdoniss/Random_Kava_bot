@@ -36,10 +36,10 @@ async def test(message: types.Message):
         return
     else:
         await bot.send_message("795526685", text=f"Наш проєкт добігає кінця!\n"
-                    f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                    f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
-                    f"для майбутнього розвитку і вдосконалення проєкту!",
-                    parse_mode=ParseMode.HTML)
+                                                 f"Будемо тобі дуже вдячні, якщо ти заповниш "
+                                                 f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                                                 f"для майбутнього розвитку і вдосконалення проєкту!",
+                               parse_mode=ParseMode.HTML)
 
 
 @dp.message_handler(commands=['send_form'])
@@ -72,10 +72,11 @@ async def test(message: types.Message):
             button_send_discount = types.KeyboardButton(text="Так, надіслати знижку.")
             keyboard.add(button_send_discount)
 
-            await bot.send_message(user_id, f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Big Mama».\n"
-                                            f"Ти зможеш скористатися знижкою один раз з 09.10 до 09.11. "
-                                            f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото на касі.\n\n"
-                                            f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
+            await bot.send_message(user_id,
+                                   f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Big Mama».\n"
+                                   f"Ти зможеш скористатися знижкою один раз з 09.10 до 09.11. "
+                                   f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото на касі.\n\n"
+                                   f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
 
 
@@ -86,15 +87,20 @@ async def test(message: types.Message):
         return
     else:
         for user_id in user.get_users_all_questions():
-            await bot.send_message(user_id, f"Привіт це <b>RandomRoll бот</b>\n\n"
-                                            f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
-                                            f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
-                                            f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
-                                            f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
-                                            f"Якщо ти вже зустрівся з групою, то "
-                                            f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
-                                            f"щоб з кожним разом проєкт ставав краще.",
-                                   parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+            try:
+                await bot.send_message(user_id, f"Привіт це <b>RandomRoll бот</b>\n\n"
+                                                f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
+                                                f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
+                                                f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
+                                                f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
+                                                f"Якщо ти вже зустрівся з групою, то "
+                                                f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
+                                                f"щоб з кожним разом проєкт ставав краще.",
+                                       parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+            except BotBlocked as e:
+                print("Attention please! The user {} has blocked the bot. I can't send anything to them".format(
+                    message.chat.id))
+
 
 @dp.message_handler(commands=['send_reminder_test'])
 async def test(message: types.Message):
@@ -102,7 +108,7 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-            await bot.send_message("795526685", f"Привіт це <b>RandomRoll бот</b>\n\n"
+        await bot.send_message("795526685", f"Привіт це <b>RandomRoll бот</b>\n\n"
                                             f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
                                             f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
                                             f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
@@ -110,7 +116,8 @@ async def test(message: types.Message):
                                             f"Якщо ти вже зустрівся з групою, то "
                                             f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
                                             f"щоб з кожним разом проєкт ставав краще.",
-                                   parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+                               parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
 
 @dp.message_handler(lambda message: message.text == "Так, надіслати знижку.")
 async def process_send_discount(callback_query: types.CallbackQuery):
@@ -150,10 +157,11 @@ async def start(message: types.Message):
                                  f"\n\n\U0001F4B3Номер картки банки"
                                  f"\n5375 4112 0976 3767")
     else:
-        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
-                             f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
-                             f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0976 3767")
+        await message.answer(
+            "На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+            f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+            f"\n\n\U0001F4B3Номер картки банки"
+            f"\n5375 4112 0976 3767")
 
 
 @dp.message_handler(content_types=['contact'])
@@ -172,8 +180,9 @@ async def contact(message):
                                  f"\n5375 4112 0976 3767",
                                  reply_markup=keyboard2)
     else:
-        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
-                             f" тут буде банка ")
+        await message.answer(
+            "На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
+            f" тут буде банка ")
 
 
 @dp.message_handler(commands=['groups_test'])
@@ -231,11 +240,12 @@ async def process_payment_photo(message: types.Message):
         else:
             await bot.send_message(message.from_user.id, 'Надішли свій номер телефону.')
     else:
-        await message.answer("На жаль, подія вже закінчилася. Очікуй нових запусків проєкту та не забувай підтримувати ЗСУ!"
-                             f"\n\n\U0001F517Посилання на банку"
-                             f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
-                             f"\n\n\U0001F4B3Номер картки банки"
-                             f"\n5375 4112 0976 3767")
+        await message.answer(
+            "На жаль, подія вже закінчилася. Очікуй нових запусків проєкту та не забувай підтримувати ЗСУ!"
+            f"\n\n\U0001F517Посилання на банку"
+            f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+            f"\n\n\U0001F4B3Номер картки банки"
+            f"\n5375 4112 0976 3767")
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
