@@ -19,12 +19,12 @@ logging.basicConfig(level=logging.INFO)
 
 kava_token = '6105836630:AAGLIAYZH5xO2UH8C5cmKqXv_7YalKh-5dU'
 roll_token = '6499628008:AAGfenfjHSrUd5M7Ix4h6jc1Why1LLiPUsU'
-bot = Bot(roll_token)
+bot = Bot(kava_token)
 # Диспетчер
 dp = Dispatcher(bot)
 order = {}
 data = questions.get_data()
-deadline = datetime.date(2023, 10, 9)
+deadline = datetime.date(2023, 6, 23)
 
 print(data)
 
@@ -35,9 +35,9 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-        await bot.send_message("795526685", text=f"Наш проєкт добігає кінця!\n"
+        await bot.send_message("677181730", text=f"Наш проєкт добігає кінця!\n"
                                                  f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                                                 f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                                                 f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>форму фідбеку</a>💕 "
                                                  f"для майбутнього розвитку і вдосконалення проєкту!",
                                parse_mode=ParseMode.HTML)
 
@@ -53,7 +53,7 @@ async def test(message: types.Message):
                 print("sent")
                 await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
                                                      f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                                                     f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform?pli=1'>форму фідбеку</a>💕 "
+                                                     f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>форму фідбеку</a>💕 "
                                                      f"для майбутнього розвитку і вдосконалення проєкту!",
                                        parse_mode=ParseMode.HTML)
             except BotBlocked as e:
@@ -73,8 +73,8 @@ async def test(message: types.Message):
             keyboard.add(button_send_discount)
 
             await bot.send_message(user_id,
-                                   f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Big Mama».\n"
-                                   f"Ти зможеш скористатися знижкою один раз з 09.10 до 09.11. "
+                                   f"Ти вже на фінішній прямій! Домовляйся зі своєю групою щодо дня зустрічі в «Кофі Шоп».\n"
+                                   f"Ти зможеш скористатися знижкою один раз з 25.06 до 02.07. "
                                    f"Щоб отримати знижку — натисни «Так, надіслати знижку» і покажи фото на касі.\n\n"
                                    f"УВАГА! Фото знижки зникаюче, тому кнопку натискати треба вже безпосередньо в закладі!",
                                    reply_markup=keyboard)
@@ -88,13 +88,12 @@ async def test(message: types.Message):
     else:
         for user_id in user.get_users_all_questions():
             try:
-                await bot.send_message(user_id, f"Привіт це <b>RandomRoll бот</b>\n\n"
-                                                f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
-                                                f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
-                                                f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
-                                                f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
+                await bot.send_message(user_id, f"Привіт це <b>RandomKava бот</b>\n\n"
+                                                f"Нагадую тобі, що <b>2 липня</b> закінчується дія знижки в закладі "
+                                                f"<a href='https://www.instagram.com/kofi._.shop?igsh=MTY3ZDQ5N280NXk2bA=='>«Кофі Шоп»</a>. "
+                                                f"Встигни зібратися зі своєю групою.\n\n"
                                                 f"Якщо ти вже зустрівся з групою, то "
-                                                f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
+                                                f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>поділись враженнями</a>, "
                                                 f"щоб з кожним разом проєкт ставав краще.",
                                        parse_mode=ParseMode.HTML, disable_web_page_preview=True)
             except BotBlocked as e:
@@ -108,14 +107,13 @@ async def test(message: types.Message):
         await message.answer("No access.")
         return
     else:
-        await bot.send_message("795526685", f"Привіт це <b>RandomRoll бот</b>\n\n"
-                                            f"Нагадую тобі, що <b>9 листопада</b> закінчується дія знижки в закладі "
-                                            f"<a href='https://www.instagram.com/bigmamakievua/'>«BigMama»</a>. "
-                                            f"Встигни зібратися зі своєю групою та пограти в круті настолки від "
-                                            f"<a href='https://lordofboards.com.ua/'>«Lord of boards»</a>.\n\n"
-                                            f"Якщо ти вже зустрівся з групою, то "
-                                            f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSeC9d6H0SaL6idGnJfRTZ6zYG0C9CMCrdq3hcT8MqLtBZClYw/viewform'>поділись враженнями</a>, "
-                                            f"щоб з кожним разом проєкт ставав краще.",
+        await bot.send_message("677181730", f"Привіт це <b>RandomKava бот</b>\n\n"
+                                                f"Нагадую тобі, що <b>2 липня</b> закінчується дія знижки в закладі "
+                                                f"<a href='https://www.instagram.com/kofi._.shop?igsh=MTY3ZDQ5N280NXk2bA=='>«Кофі Шоп»</a>. "
+                                                f"Встигни зібратися зі своєю групою.\n\n"
+                                                f"Якщо ти вже зустрівся з групою, то "
+                                                f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>поділись враженнями</a>, "
+                                                f"щоб з кожним разом проєкт ставав краще.",
                                parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 
@@ -153,15 +151,15 @@ async def start(message: types.Message):
                                  "!\nБудь ласка, надішли фото донату від 50 грн."
                                  f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                                  f"\n\n\U0001F517Посилання на банку"
-                                 f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+                                 f"\nhttps://send.monobank.ua/jar/A6JPNT1b3e"
                                  f"\n\n\U0001F4B3Номер картки банки"
-                                 f"\n5375 4112 0976 3767")
+                                 f"\n5375 4112 1932 5888")
     else:
         await message.answer(
             "На жаль, подія вже закінчилася. Очікуй нових запусків проєкту, та не забувай підтримувати ЗСУ!"
-            f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+            f"\nhttps://send.monobank.ua/jar/A6JPNT1b3e"
             f"\n\n\U0001F4B3Номер картки банки"
-            f"\n5375 4112 0976 3767")
+            f"\n5375 4112 1932 5888")
 
 
 @dp.message_handler(content_types=['contact'])
@@ -175,9 +173,9 @@ async def contact(message):
                                  f"\nБудь ласка, надішли фото донату від 50 грн."
                                  f"\n\nНа скриншоті має бути видно дату, отримувача і суму."
                                  f"\n\n\U0001F517Посилання на банку"
-                                 f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+                                 f"\nhttps://send.monobank.ua/jar/A6JPNT1b3e"
                                  f"\n\n\U0001F4B3Номер картки банки"
-                                 f"\n5375 4112 0976 3767",
+                                 f"\n5375 4112 1932 5888",
                                  reply_markup=keyboard2)
     else:
         await message.answer(
@@ -243,9 +241,9 @@ async def process_payment_photo(message: types.Message):
         await message.answer(
             "На жаль, подія вже закінчилася. Очікуй нових запусків проєкту та не забувай підтримувати ЗСУ!"
             f"\n\n\U0001F517Посилання на банку"
-            f"\nhttps://send.monobank.ua/jar/5cbyVUTmjF"
+            f"\nhttps://send.monobank.ua/jar/A6JPNT1b3e"
             f"\n\n\U0001F4B3Номер картки банки"
-            f"\n5375 4112 0976 3767")
+            f"\n5375 4112 1932 5888")
 
 
 @dp.callback_query_handler(lambda c: "valid" in c.data)
@@ -311,13 +309,7 @@ async def ask_question(user_id):
         await bot.send_message(text=f"Дякую за відповідь!\nТвої відповіді:\n{user_answer.print(user_id)}\n",
                                chat_id=user_id)
         await bot.send_message(text=f"Чудово, тепер бот опрацює твої відповіді! Незабаром ти дізнаєшся про свою "
-                                    f"групу та знижки в закладі «Big Mama». "
-                                    f"\n\nТакож ти зможеш отримати промокод на знижку 10% від «Lord of boards». "
-                                    f"Для цього потрібно зареєструватися на сайті: "
-                                    f"https://lordofboards.com.ua/"
-                                    f", потім написати в телеграм @Lord_of_Boards «Я з КПІ Random roll» "
-                                    f"і емейл, за яким зареєструвався. "
-                                    f"Знижка діятиме місяць з моменту отримання коду."
+                                    f"групу та знижки в закладі «Кофі Шоп»."
                                     f"\n\nЩиро дякуємо, що ти з нами в цьому проєкті!",
                                chat_id=user_id)
 
