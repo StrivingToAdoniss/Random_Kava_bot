@@ -24,7 +24,7 @@ bot = Bot(kava_token)
 dp = Dispatcher(bot)
 order = {}
 data = questions.get_data()
-deadline = datetime.date(2024, 6, 23)
+deadline = datetime.date(2024, 6, 24)
 
 print(data)
 
