@@ -37,7 +37,7 @@ async def test(message: types.Message):
     else:
         await bot.send_message("677181730", text=f"Наш проєкт добігає кінця!\n"
                                                  f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                                                 f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>форму фідбеку</a>💕 "
+                                                 f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSerfyK2dgDkYD_1HJHAyTBDdgY-5eFlPGr_n2fEmxRVRm7C2A/viewform?usp=sf_link'>форму фідбеку</a>💕 "
                                                  f"для майбутнього розвитку і вдосконалення проєкту!",
                                parse_mode=ParseMode.HTML)
 
@@ -53,7 +53,7 @@ async def test(message: types.Message):
                 print("sent")
                 await bot.send_message(user_id, text=f"Наш проєкт добігає кінця!\n"
                                                      f"Будемо тобі дуже вдячні, якщо ти заповниш "
-                                                     f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>форму фідбеку</a>💕 "
+                                                     f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSerfyK2dgDkYD_1HJHAyTBDdgY-5eFlPGr_n2fEmxRVRm7C2A/viewform?usp=sf_link'>форму фідбеку</a>💕 "
                                                      f"для майбутнього розвитку і вдосконалення проєкту!",
                                        parse_mode=ParseMode.HTML)
             except BotBlocked as e:
@@ -93,7 +93,7 @@ async def test(message: types.Message):
                                                 f"<a href='https://www.instagram.com/kofi._.shop?igsh=MTY3ZDQ5N280NXk2bA=='>«Кофі Шоп»</a>. "
                                                 f"Встигни зібратися зі своєю групою.\n\n"
                                                 f"Якщо ти вже зустрівся з групою, то "
-                                                f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>поділись враженнями</a>, "
+                                                f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSerfyK2dgDkYD_1HJHAyTBDdgY-5eFlPGr_n2fEmxRVRm7C2A/viewform?usp=sf_link'>поділись враженнями</a>, "
                                                 f"щоб з кожним разом проєкт ставав краще.",
                                        parse_mode=ParseMode.HTML, disable_web_page_preview=True)
             except BotBlocked as e:
@@ -112,7 +112,7 @@ async def test(message: types.Message):
                                                 f"<a href='https://www.instagram.com/kofi._.shop?igsh=MTY3ZDQ5N280NXk2bA=='>«Кофі Шоп»</a>. "
                                                 f"Встигни зібратися зі своєю групою.\n\n"
                                                 f"Якщо ти вже зустрівся з групою, то "
-                                                f"<a href='https://forms.gle/1hHM26Efm3qmJ8fY7'>поділись враженнями</a>, "
+                                                f"<a href='https://docs.google.com/forms/d/e/1FAIpQLSerfyK2dgDkYD_1HJHAyTBDdgY-5eFlPGr_n2fEmxRVRm7C2A/viewform?usp=sf_link'>поділись враженнями</a>, "
                                                 f"щоб з кожним разом проєкт ставав краще.",
                                parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
